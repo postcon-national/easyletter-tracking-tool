@@ -45,7 +45,6 @@ const MobileBarcodeScanner = ({ onScan }) => {
         const code = jsQR(imageData.data, imageData.width, imageData.height, {
           inversionAttempts: 'dontInvert',
         });
-        console.log(code?.data);
         if (code) {
           setScannedData(code.data);
           setWait(true);
