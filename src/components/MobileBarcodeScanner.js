@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { QrReader } from 'react-qr-reader';
 
-
 const MobileBarcodeScanner = ({ onScan }) => {
   const [scannedData, setScannedData] = useState('');
 
@@ -12,9 +11,9 @@ const MobileBarcodeScanner = ({ onScan }) => {
     }
   }, [scannedData, onScan]);
 
-  const handleScan = (data) => {
-    if (data) {
-      setScannedData(data);
+  const handleScan = (result) => {
+    if (result) {
+      setScannedData(result.text);
     }
   };
 
@@ -23,14 +22,23 @@ const MobileBarcodeScanner = ({ onScan }) => {
   };
 
   return (
-    <div className="w-full h-full flex justify-center items-center">
-      <h1>QR Code Scanner</h1>
-      <QrReader
-        delay={300}
-        onError={handleError}
-        onScan={handleScan}
-        style={{ width: '100%' }}
-      />
+    <div className="w-full h-screen flex flex-col justify-center items-center p-4">
+      <h1 className="text-center mb-4">QR Code Scanner</h1>
+      <div className="w-full sm:w-auto">
+        <QrReader
+          constraints={{ facingMode: 'environment' }}
+          onResult={(result, error) => {
+            if (!!result) {
+              handleScan(result);
+            }
+
+            if (!!error) {
+              handleError(error);
+            }
+          }}
+          style={{ width: '100%' }}
+        />
+      </div>
     </div>
   );
 };
