@@ -45,7 +45,7 @@ const BarcodeScanner: React.FC<BarcodeScannerProps> = ({ onScan }) => {
         value={barcode}
         onChange={handleScan}
         placeholder="Scan barcode here"
-        className="border p-2 rounded text-gray-700 w-1/2"
+        className="border p-2 rounded text-gray-700  w-full lg:w-1/2"
       />
     </div>
   );

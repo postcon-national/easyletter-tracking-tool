@@ -11,6 +11,7 @@ import { codes, columns } from '../data/data';
 
 const Home: React.FC = () => {
   const [data, setData] = useState(codes);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [selectedRows, setSelectedRows] = useState<any[]>([]);
 
   const handleDelete = () => {

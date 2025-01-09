@@ -40,6 +40,7 @@ export default function DataTable<T extends { id: string }>(props: TableProps<T>
                 type="checkbox"
                 checked={selectAll}
                 onChange={() => setSelectAll(!selectAll)}
+                className="form-checkbox h-4 w-4 text-indigo-600 transition duration-150 ease-in-out"
               />
             </th>
             {columns.map((column) => (
@@ -61,6 +62,7 @@ export default function DataTable<T extends { id: string }>(props: TableProps<T>
                   type="checkbox"
                   checked={selectedRows.includes(row)}
                   onChange={() => handleSelectRow(row)}
+                  className="form-checkbox h-4 w-4 text-indigo-600 transition duration-150 ease-in-out"
                 />
               </td>
               {columns.map((column) => (
