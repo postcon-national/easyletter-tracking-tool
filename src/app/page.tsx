@@ -44,7 +44,6 @@ const Home: React.FC = () => {
         <h1 className="text-2xl font-bold text-orange-500">Scanner Application</h1>
       </header>
       <BarcodeScanner onScan={handleScan} />
-      here
       <MobileBarcodeScanner onScan={handleScan} />
       <DataTable
         columns={columns}
