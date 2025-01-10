@@ -25,17 +25,12 @@ export async function POST(req) {
 
     const csv = parse(data, opts);
 
-    // Generate the filename with the current date and time
-    const now = new Date();
-    const timestamp = now.toISOString().replace(/[-:.]/g, '').slice(0, 15); // YYYYMMDDhhmmss
-    const filename = `${timestamp}_Trackingdaten_dvs.csv`;
-
     // Construct the file response
     return new NextResponse(csv, {
       status: 200,
       headers: {
         'Content-Type': 'text/csv; charset=utf-8',
-        'Content-Disposition': `attachment; filename="${filename}"`,
+        'Content-Disposition': `attachment;`,
       },
     });
   } catch (error) {

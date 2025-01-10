@@ -1,83 +1,50 @@
 'use client'
 
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import BarcodeScanner from '@/components/BarcodeScanner';
 import MobileBarcodeScanner from '@/components/MobileBarcodeScanner';
 import DataTable from '@/components/DataTable';
 import DeleteButton from '@/components/DeleteButton';
 import ExportButton from '@/components/ExportButton';
-//import { exportToCSV } from '@/components';
 import { codes, columns } from '@/data/data';
 import useWindowSize from '@/hooks/useWindowSize';
+import { exportToCSV } from '@/utils/cvs/functions';
+import { scan } from '@/utils/scan/functions';
+import { Code } from '@/types/types';
 
+const LOCAL_STORAGE_KEY = 'sc-scan-data';
 
 const Home: React.FC = () => {
   const { width } = useWindowSize();
   const isMobile = width <= 768;
 
-  const [data, setData] = useState(codes);
+  const [data, setData] = useState(() => {
+    // Load data from localStorage when the component mounts
+    const savedData = localStorage.getItem(LOCAL_STORAGE_KEY);
+    return savedData ? JSON.parse(savedData) : codes;
+  });
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [selectedRows, setSelectedRows] = useState<any[]>([]);
 
+  useEffect(() => {
+    // Save data to localStorage whenever it changes
+    localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(data));
+  }, [data]);
+
   const handleDelete = () => {
-    setData(data.filter(row => !selectedRows.includes(row)));
+    setData(data.filter((row: Code) => !selectedRows.includes(row)));
     setSelectedRows([]);
   };
 
   const handleExport = async () => {
-    try {
-      // 1. Send the data to our API route
-      const response = await fetch('/api/export-csv', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(data),
-      });
-
-      if (!response.ok) {
-        throw new Error(`Error: ${response.status}`);
-      }
-
-      // 2. Convert the response to a Blob
-      const blob = await response.blob();
-
-      // 3. Create a URL for the Blob
-      const url = window.URL.createObjectURL(blob);
-
-      // 4. Create a temporary <a> element to trigger the download
-      const link = document.createElement('a');
-      link.href = url;
-      link.setAttribute('download', 'export.csv');
-      document.body.appendChild(link);
-      link.click();
-
-      // Cleanup the link
-      document.body.removeChild(link);
-      window.URL.revokeObjectURL(url);
-
-      // 5. Clear the exported data from local state
-      setData([]);
-    } catch (error) {
-      console.error('Export failed:', error);
-    }
+    exportToCSV(data, setData);
+    localStorage.removeItem(LOCAL_STORAGE_KEY);
+    setData([]);
   };
 
   const handleScan = useCallback((scannedData: string) => {
-    const newEntry = {
-      id: (data.length + 1).toString(),
-      sidDVS: scannedData.slice(4, 20),
-      sidZup: scannedData.slice(4, 20),
-      dmc: scannedData,
-      gam: new Date().toISOString(),
-      status: 'VALID',
-      erfasser: '4202',
-      zust: '4202',
-    };
-    setData(prevData => [...prevData, newEntry]);
+    scan(scannedData, data, setData);
   }, [data.length]);
-
-  console.log(JSON.stringify(data, null, 2));
 
   return (
     <div className="min-h-screen bg-[#f5f5f5]">
