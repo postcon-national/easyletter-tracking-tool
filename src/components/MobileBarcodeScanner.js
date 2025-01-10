@@ -74,8 +74,8 @@ const MobileBarcodeScanner = ({ onScan }) => {
   };
 
   return (
-    <div className="w-full h-screen flex flex-col justify-center items-center p-4">
-      <h1 className="text-center mb-4">QR Code Scanner</h1>
+    <div className="flex flex-col justify-center items-center p-4">
+      <h1 className="text-center mb-4 text-gray-700">QR Code Scanner</h1>
       <video ref={videoRef} className="w-full sm:w-auto" />
       <canvas ref={canvasRef} className="hidden" />
       <input
@@ -88,7 +88,7 @@ const MobileBarcodeScanner = ({ onScan }) => {
         onClick={handleAddToList}
         className="mt-2 p-2 bg-blue-500 text-white rounded"
       >
-        Accept and Add to List
+        📱 Accept QR 
       </button>
     </div>
   );

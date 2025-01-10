@@ -7,9 +7,14 @@ import DataTable from '@/components/DataTable';
 import DeleteButton from '@/components/DeleteButton';
 import ExportButton from '@/components/ExportButton';
 //import { exportToCSV } from '@/components';
-import { codes, columns } from '../data/data';
+import { codes, columns } from '@/data/data';
+import useWindowSize from '@/hooks/useWindowSize';
+
 
 const Home: React.FC = () => {
+  const { width } = useWindowSize();
+  const isMobile = width <= 768;
+
   const [data, setData] = useState(codes);
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [selectedRows, setSelectedRows] = useState<any[]>([]);
@@ -43,8 +48,9 @@ const Home: React.FC = () => {
         <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSs5fSe7cesYu_vRdemQYmiXaa5mXb3dtHyPg&s" alt="Logo" className="h-12" />
         <h1 className="text-2xl font-bold text-orange-500">Scanner Application</h1>
       </header>
-      <BarcodeScanner onScan={handleScan} />
-      <MobileBarcodeScanner onScan={handleScan} />
+      {isMobile ? <MobileBarcodeScanner onScan={handleScan} /> : <BarcodeScanner onScan={handleScan} />}
+      {/* <BarcodeScanner onScan={handleScan} />
+      <MobileBarcodeScanner onScan={handleScan} /> */}
       <DataTable
         columns={columns}
         data={data}

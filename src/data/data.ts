@@ -11,31 +11,31 @@ export const columns: Array<Column<Code>> = [
 ];
 
 export const codes: Code[] = [
-  {
-    sidDVS: '123456',
-    sidZup: '654321',
-    dmc: 'ABC123',
-    gam: '2023-10-01',
-    status: 'Delivered',
-    erfasser: 'John Doe',
-    zust: 'Jane Smith',
-  },
-  {
-    sidDVS: '789012',
-    sidZup: '210987',
-    dmc: 'DEF456',
-    gam: '2023-10-02',
-    status: 'In Transit',
-    erfasser: 'Alice Johnson',
-    zust: 'Bob Brown',
-  },
-  {
-    sidDVS: '345678',
-    sidZup: '876543',
-    dmc: 'GHI789',
-    gam: '2023-10-03',
-    status: 'Pending',
-    erfasser: 'Charlie Davis',
-    zust: 'Eve White',
-  },
+  // {
+  //   sidDVS: '123456',
+  //   sidZup: '654321',
+  //   dmc: 'ABC123',
+  //   gam: '2023-10-01',
+  //   status: 'Delivered',
+  //   erfasser: 'John Doe',
+  //   zust: 'Jane Smith',
+  // },
+  // {
+  //   sidDVS: '789012',
+  //   sidZup: '210987',
+  //   dmc: 'DEF456',
+  //   gam: '2023-10-02',
+  //   status: 'In Transit',
+  //   erfasser: 'Alice Johnson',
+  //   zust: 'Bob Brown',
+  // },
+  // {
+  //   sidDVS: '345678',
+  //   sidZup: '876543',
+  //   dmc: 'GHI789',
+  //   gam: '2023-10-03',
+  //   status: 'Pending',
+  //   erfasser: 'Charlie Davis',
+  //   zust: 'Eve White',
+  // },
 ];
