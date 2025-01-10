@@ -11,6 +11,7 @@ import useWindowSize from '@/hooks/useWindowSize';
 import { exportToCSV } from '@/utils/cvs/functions';
 import { scan } from '@/utils/scan/functions';
 import { Code } from '@/types/types';
+import Image from 'next/image';
 
 const LOCAL_STORAGE_KEY = 'sc-scan-data';
 
@@ -75,10 +76,12 @@ const Home: React.FC = () => {
               <p className="text-sm text-[#666666] mt-1">Sortierzentrum Eingangsscan</p>
             </div>
             <div className="flex items-center">
-              <img 
+              <Image 
                 src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSs5fSe7cesYu_vRdemQYmiXaa5mXb3dtHyPg&s"
                 alt="DVS Logo" 
                 className="h-12 w-auto object-contain"
+                width={200}
+                height={200}
               />
             </div>
           </div>
