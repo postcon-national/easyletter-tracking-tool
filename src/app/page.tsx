@@ -103,10 +103,13 @@ const Home: React.FC = () => {
             setSelectedRows={setSelectedRows}
           />
           
-          <div className="flex justify-end mt-6 space-x-4">
-            <DeleteButton onDelete={handleDelete} disabled={selectedRows.length === 0} /> 
-            <ExportButton onExport={handleExport} disabled={data.length === 0} />
-          </div>
+          {selectedRows && data && (
+             <div className="flex justify-end mt-6 space-x-4">
+             <DeleteButton onDelete={handleDelete} disabled={selectedRows?.length === 0} /> 
+             <ExportButton onExport={handleExport} disabled={data?.length === 0} />
+           </div>
+          )}
+         
         </div>
       </main>
     </div>
