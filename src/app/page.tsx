@@ -9,8 +9,7 @@ import ExportButton from '@/components/ExportButton';
 import { codes, columns } from '@/data/data';
 import useWindowSize from '@/hooks/useWindowSize';
 import { exportToCSV } from '@/utils/cvs/functions';
-import { scan } from '@/utils/scan/functions';
-import { Code } from '@/types/types';
+import { Code, StatusType } from '@/types/types';
 
 const LOCAL_STORAGE_KEY = 'sc-scan-data';
 
@@ -18,18 +17,25 @@ const Home: React.FC = () => {
   const { width } = useWindowSize();
   const isMobile = width <= 768;
 
-  const [data, setData] = useState(() => {
-    // Load data from localStorage when the component mounts
-    const savedData = localStorage.getItem(LOCAL_STORAGE_KEY);
-    return savedData ? JSON.parse(savedData) : codes;
-  });
-  
+  const [data, setData] = useState<Code[]>([]);
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const [selectedRows, setSelectedRows] = useState<any[]>([]);
+  const [selectedRows, setSelectedRows] = useState<Code[]>([]);
 
+  // Load data from localStorage or initial data when component mounts (client-side only)
   useEffect(() => {
-    // Save data to localStorage whenever it changes
-    localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(data));
+    const savedData = localStorage.getItem(LOCAL_STORAGE_KEY);
+    if (savedData) {
+      setData(JSON.parse(savedData));
+    } else {
+      setData(codes);
+    }
+  }, []);
+
+  // Save data to localStorage whenever it changes
+  useEffect(() => {
+    if (data.length > 0) {
+      localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(data));
+    }
   }, [data]);
 
   const handleDelete = () => {
@@ -44,7 +50,17 @@ const Home: React.FC = () => {
   };
 
   const handleScan = useCallback((scannedData: string) => {
-    scan(scannedData, data, setData);
+    const newEntry: Code = {
+      id: (data.length + 1).toString(),
+      sidDVS: scannedData.slice(4, 20),
+      sidZup: scannedData.slice(4, 20),
+      dmc: scannedData,
+      gam: new Date().toISOString(),
+      status: "VALID" as StatusType,
+      erfasser: '4202',
+      zust: scannedData.slice(25, 28),
+    };
+    setData(prevData => [...prevData, newEntry]);
   }, [data.length]);
 
   return (

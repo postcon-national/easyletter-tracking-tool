@@ -12,24 +12,6 @@ const formatDateTime = (dateStr: string) => {
   });
 };
 
-type StatusType = "VALID" | "NON_VALID" | "REDIRECTED";
-
-const statusClasses: Record<StatusType, string> = {
-  VALID:
-    "bg-green-100 text-green-800 px-2 py-1 rounded-full text-xs font-medium",
-  NON_VALID:
-    "bg-red-100 text-red-800 px-2 py-1 rounded-full text-xs font-medium",
-  REDIRECTED:
-    "bg-yellow-100 text-yellow-800 px-2 py-1 rounded-full text-xs font-medium",
-};
-
-const formatStatus = (status: string) => {
-  return `<span class="${
-    statusClasses[status as StatusType] ||
-    "bg-gray-100 text-gray-800 px-2 py-1 rounded-full text-xs font-medium"
-  }">${status}</span>`;
-};
-
 export const columns: Array<Column<Code>> = [
   { key: "sidDVS", label: "Sendungs-ID (DVS)" },
   { key: "sidZup", label: "Sendungs-ID (ZUP)" },
@@ -42,7 +24,6 @@ export const columns: Array<Column<Code>> = [
   {
     key: "status",
     label: "Status",
-    format: formatStatus,
   },
   { key: "erfasser", label: "Erfasst von" },
   { key: "zust", label: "ZUP" },

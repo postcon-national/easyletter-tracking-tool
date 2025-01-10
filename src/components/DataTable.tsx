@@ -1,7 +1,8 @@
 "use client"
 
 import React, { useState, useEffect } from 'react';
-import { Column } from '@/types/types';
+import { Column, StatusType } from '@/types/types';
+import StatusTag from './StatusTag';
 import {
   useReactTable,
   getCoreRowModel,
@@ -56,10 +57,10 @@ export default function DataTable<T extends { id: string }>(props: TableProps<T>
       header: col.label,
       cell: (props: CellContext<T, unknown>) => {
         const value = props.getValue() as T[keyof T];
+        if (col.key === 'status') {
+          return <StatusTag status={value as StatusType} />;
+        }
         if (col.format) {
-          if (col.key === 'status') {
-            return <div dangerouslySetInnerHTML={{ __html: col.format(value) }} />;
-          }
           return col.format(value);
         }
         return String(value);
