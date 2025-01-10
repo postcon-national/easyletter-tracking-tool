@@ -24,6 +24,13 @@ export const exportToCSV = async (
     const now = new Date();
     const timestamp = now.toISOString().replace(/[-:.]/g, '').slice(0, 15);
     const suggestedName = `${timestamp}_Trackingdaten_dvs.csv`;
+
+    const hasFileSystemAccess = 'showSaveFilePicker' in window;
+
+    if (!hasFileSystemAccess) {
+      fallbackDownload(new Blob([csvText]), setData);
+      return;
+    }
     
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const fileHandle = await (window as any).showSaveFilePicker({
@@ -55,3 +62,37 @@ export const exportToCSV = async (
         console.log('User CANCELED:', err);
   }
 };
+
+async function fallbackDownload(
+    csvBlob: Blob,
+    setData: (value: React.SetStateAction<Code[]>) => void
+  ) {
+    try {
+      // Create a temporary Blob URL
+      const url = URL.createObjectURL(csvBlob);
+  
+      // Generate a filename with current date/time
+      const now = new Date();
+      const timestamp = now.toISOString().replace(/[-:.]/g, '').slice(0, 15);
+      const filename = `${timestamp}_Trackingdaten_dvs.csv`;
+  
+      // Create a temporary <a> element
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', filename);
+      document.body.appendChild(link);
+  
+      // Trigger download
+      link.click();
+  
+      // Cleanup
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+  
+        localStorage.removeItem('sc-scan-data');
+        setData([]);
+  
+    } catch (err) {
+      console.error('Fallback download failed:', err);
+    }
+  }
