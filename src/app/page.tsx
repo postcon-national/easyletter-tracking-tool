@@ -24,8 +24,43 @@ const Home: React.FC = () => {
     setSelectedRows([]);
   };
 
-  const handleExport = () => {
-    //  exportToCSV(data, 'scanned_data');
+  const handleExport = async () => {
+    try {
+      // 1. Send the data to our API route
+      const response = await fetch('/api/export-csv', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data),
+      });
+
+      if (!response.ok) {
+        throw new Error(`Error: ${response.status}`);
+      }
+
+      // 2. Convert the response to a Blob
+      const blob = await response.blob();
+
+      // 3. Create a URL for the Blob
+      const url = window.URL.createObjectURL(blob);
+
+      // 4. Create a temporary <a> element to trigger the download
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', 'export.csv');
+      document.body.appendChild(link);
+      link.click();
+
+      // Cleanup the link
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(url);
+
+      // 5. Clear the exported data from local state
+      setData([]);
+    } catch (error) {
+      console.error('Export failed:', error);
+    }
   };
 
   const handleScan = useCallback((scannedData: string) => {
@@ -41,6 +76,8 @@ const Home: React.FC = () => {
     };
     setData(prevData => [...prevData, newEntry]);
   }, [data.length]);
+
+  console.log(JSON.stringify(data, null, 2));
 
   return (
     <div className="container mx-auto p-4 space-y-6">
