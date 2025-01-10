@@ -30,14 +30,14 @@ export const columns: Array<Column<Code>> = [
 ];
 
 // Function to generate a random date within the last 30 days
-// const getRandomDate = () => {
-//   const end = new Date();
-//   const start = new Date();
-//   start.setDate(start.getDate() - 30);
-//   return new Date(
-//     start.getTime() + Math.random() * (end.getTime() - start.getTime())
-//   ).toISOString();
-// };
+const getRandomDate = () => {
+  const end = new Date();
+  const start = new Date();
+  start.setDate(start.getDate() - 30);
+  return new Date(
+    start.getTime() + Math.random() * (end.getTime() - start.getTime())
+  ).toISOString();
+};
 
 // Function to generate a random sendungsId (16 digits)
 const generateSendungsId = () => {
@@ -47,24 +47,24 @@ const generateSendungsId = () => {
 };
 
 // Function to generate test data
-// const generateTestData = (count: number): Code[] => {
-//   return Array.from({ length: count }, (_, index) => {
-//     const sendungsId = generateSendungsId();
-//     const zustellpartnerId = String(Math.floor(Math.random() * 900) + 100); // Random 3-digit number
-//     return {
-//       id: (index + 1).toString(),
-//       sidDVS: sendungsId,
-//       sidZup: sendungsId,
-//       dmc: `DVSC${sendungsId}23456${zustellpartnerId}1${String(
-//         Math.floor(Math.random() * 90) + 10
-//       )}`,
-//       gam: getRandomDate(),
-//       status: "VALID",
-//       erfasser: "4202",
-//       zust: zustellpartnerId,
-//     };
-//   });
-// };
+const generateTestData = (count: number): Code[] => {
+  return Array.from({ length: count }, (_, index) => {
+    const sendungsId = generateSendungsId();
+    const zustellpartnerId = String(Math.floor(Math.random() * 900) + 100); // Random 3-digit number
+    return {
+      id: (index + 1).toString(),
+      sidDVS: sendungsId,
+      sidZup: sendungsId,
+      dmc: `DVSC${sendungsId}23456${zustellpartnerId}1${String(
+        Math.floor(Math.random() * 90) + 10
+      )}`,
+      gam: getRandomDate(),
+      status: "VALID",
+      erfasser: "4202",
+      zust: zustellpartnerId,
+    };
+  });
+};
 
 // Generate 5000 test entries
 // export const codes: Code[] = generateTestData(5000);
