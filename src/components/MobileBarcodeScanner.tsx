@@ -121,14 +121,16 @@ const MobileBarcodeScanner: React.FC<MobileBarcodeScannerProps> = ({
               setValidationError('');
               setIsScanning(true);
             }, 2000);
-          } else if (code.data === lastScannedRef.current) {
+          } 
+          else if (code.data === lastScannedRef.current) {
             setValidationError('Bitte warten Sie, bevor Sie denselben Barcode erneut scannen.');
             lastScanTimeRef.current = now;
             setTimeout(() => {
               setValidationError('');
               setIsScanning(true);
             }, 2000);
-          } else {
+          } 
+          else {
             onScan(code.data);
             lastScannedRef.current = code.data;
             lastScanTimeRef.current = now;

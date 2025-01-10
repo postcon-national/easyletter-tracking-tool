@@ -1,4 +1,5 @@
 import { Code } from "@/types/types";
+import moment from "moment";
 
 export const scan = (
   scannedData: string,
@@ -11,7 +12,7 @@ export const scan = (
     sidDVS: scannedData.slice(4, 20),
     sidZup: scannedData.slice(4, 20),
     dmc: scannedData,
-    gam: new Date().toISOString(),
+    gam: moment(new Date().toISOString()).format("YYYY-MM-DD HH:mm:ss"),
     status: "VALID",
     erfasser: "4202",
     zust: zustellpartnerId,
