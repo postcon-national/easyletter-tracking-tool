@@ -1,136 +1,166 @@
-import React, { useState, useEffect, useRef } from 'react';
+"use client"
+
+import React, { useState, useRef, useEffect } from 'react';
+import MobileBarcodeScanner from './MobileBarcodeScanner';
 
 interface BarcodeScannerProps {
-  onScan: (scannedData: string) => void;
+  onScan: (data: string) => void;
+  error?: string | null;
+  checkDuplicate: (data: string) => boolean;
 }
 
-const BarcodeScanner: React.FC<BarcodeScannerProps> = ({ onScan }) => {
-  const [barcode, setBarcode] = useState('');
-  const [error, setError] = useState('');
+export default function BarcodeScanner({ onScan, error, checkDuplicate }: BarcodeScannerProps) {
+  const [inputValue, setInputValue] = useState('');
+  const [showCamera, setShowCamera] = useState(false);
+  const [validationError, setValidationError] = useState('');
   const inputRef = useRef<HTMLInputElement>(null);
 
-  // Initial focus
   useEffect(() => {
-    if (inputRef.current) {
+    if (!showCamera && inputRef.current) {
       inputRef.current.focus();
     }
-  }, []);
-
-  // Maintain focus only when window/document regains focus
-  useEffect(() => {
-    const focusInput = () => {
-      // Only refocus if no other element is actively focused
-      if (document.activeElement === document.body) {
-        inputRef.current?.focus();
-      }
-    };
-
-    // Refocus when window gains focus
-    window.addEventListener('focus', focusInput);
-
-    return () => {
-      window.removeEventListener('focus', focusInput);
-    };
-  }, []);
+  }, [showCamera]);
 
   const validateBarcode = (code: string): boolean => {
-    // Remove any whitespace
     code = code.trim();
 
-    // Basic length check
     if (code.length < 31) {
-      setError('Barcode muss mindestens 31 Zeichen lang sein');
+      setValidationError('Barcode muss mindestens 31 Zeichen lang sein');
       return false;
     }
 
-    // Check fixed values
     if (code.slice(0, 3) !== 'DVS') {
-      setError('Barcode muss mit "DVS" beginnen');
+      setValidationError('Barcode muss mit "DVS" beginnen');
       return false;
     }
 
     if (code[3] !== 'C') {
-      setError('Position 4 muss "C" sein');
+      setValidationError('Position 4 muss "C" sein');
       return false;
     }
 
-    // Check Sendungs_ID (positions 5-20)
     const sendungsId = code.slice(4, 20);
     if (!/^\d{16}$/.test(sendungsId)) {
-      setError('Sendungs_ID muss 16 Ziffern enthalten');
+      setValidationError('Sendungs_ID muss 16 Ziffern enthalten');
       return false;
     }
 
-    // Check Einspeiser_ID (positions 21-25)
     const einspeiserId = code.slice(20, 25);
     if (!/^\d{5}$/.test(einspeiserId)) {
-      setError('Einspeiser_ID muss 5 Ziffern enthalten');
+      setValidationError('Einspeiser_ID muss 5 Ziffern enthalten');
       return false;
     }
 
-    // Check Zustellpartner_ID (positions 26-28)
     const zustellpartnerId = code.slice(25, 28);
     if (!/^\d{3}$/.test(zustellpartnerId)) {
-      setError('Zustellpartner_ID muss 3 Ziffern enthalten');
+      setValidationError('Zustellpartner_ID muss 3 Ziffern enthalten');
       return false;
     }
 
-    // Check Abladestellen_ID (position 29)
     const abladestellenId = code[28];
     if (!/^\d{1}$/.test(abladestellenId)) {
-      setError('Abladestellen_ID muss 1 Ziffer enthalten');
+      setValidationError('Abladestellen_ID muss 1 Ziffer enthalten');
       return false;
     }
 
-    // Check Produktcode (positions 30-31)
     const produktCode = code.slice(29, 31);
     if (!/^\d{2}$/.test(produktCode)) {
-      setError('Produktcode muss 2 Ziffern enthalten');
+      setValidationError('Produktcode muss 2 Ziffern enthalten');
       return false;
     }
 
-    setError('');
+    setValidationError('');
     return true;
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter' && barcode.trim()) {
-      if (validateBarcode(barcode)) {
-        onScan(barcode);
-        setBarcode(''); // Clear the input after saving
-        setError(''); // Clear any previous error
+    if (e.key === 'Enter' && inputValue) {
+      if (validateBarcode(inputValue)) {
+        if (checkDuplicate(inputValue)) {
+          setValidationError('Dieser Barcode wurde bereits gescannt.');
+        } else {
+          onScan(inputValue);
+          setInputValue('');
+          setValidationError('');
+        }
       }
-      // Ensure focus remains after scanning
-      inputRef.current?.focus();
     }
   };
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setBarcode(e.target.value);
-    setError(''); // Clear error when user starts typing
+  const handleCameraToggle = () => {
+    setShowCamera(!showCamera);
+    setValidationError('');
+  };
+
+  const handleCameraScan = (data: string) => {
+    if (validateBarcode(data)) {
+      if (checkDuplicate(data)) {
+        setValidationError('Dieser Barcode wurde bereits gescannt.');
+      } else {
+        onScan(data);
+        setValidationError('');
+      }
+    }
   };
 
   return (
-    <div className="space-y-2">
-      <input
-        ref={inputRef}
-        type="text"
-        value={barcode}
-        onChange={handleChange}
-        onKeyDown={handleKeyDown}
-        placeholder="Bitte Barcode scannen oder eingeben"
-        className={`w-full p-3 border rounded-lg focus:outline-none focus:ring-2 ${
-          error 
-            ? 'border-red-500 focus:border-red-500 focus:ring-red-200' 
-            : 'border-[#666666] focus:border-[#ff6600] focus:ring-[#ff6600]/20'
-        }`}
-        autoFocus
-      />
-      {error && (
-        <p className="text-red-500 text-sm">{error}</p>
+    <div className="space-y-4">
+      {showCamera ? (
+        <div className="relative">
+          <MobileBarcodeScanner 
+            onScan={handleCameraScan} 
+            error={error} 
+            checkDuplicate={checkDuplicate}
+          />
+          <button
+            onClick={handleCameraToggle}
+            className="absolute top-2 right-2 bg-white p-2 rounded-full shadow-md hover:bg-gray-100"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+      ) : (
+        <div className="space-y-2">
+          <div className="flex gap-2">
+            <input
+              ref={inputRef}
+              type="text"
+              value={inputValue}
+              onChange={(e) => {
+                setInputValue(e.target.value);
+                setValidationError('');
+              }}
+              onKeyDown={handleKeyDown}
+              placeholder="Bitte Barcode scannen oder eingeben"
+              className={`flex-1 p-2 border rounded focus:outline-none focus:ring-0 focus:border-[var(--dvs-orange)] transition-colors ${
+                validationError || error
+                  ? 'border-[var(--dvs-orange)]'
+                  : 'border-gray-200'
+              }`}
+            />
+            <button
+              onClick={handleCameraToggle}
+              className="p-2 border rounded hover:bg-gray-50"
+              title="Kamera verwenden"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
+              </svg>
+            </button>
+          </div>
+          {(validationError || error) && (
+            <div className="flex items-center gap-2 p-3 bg-[#fff9f5] border border-[#ff6600]/20 rounded">
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-[#ff6600]" viewBox="0 0 20 20" fill="currentColor">
+                <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+              </svg>
+              <span className="text-sm text-[#4a4a4a] font-medium">{validationError || error}</span>
+            </div>
+          )}
+        </div>
       )}
     </div>
   );
-};
-
-export default BarcodeScanner;
+}

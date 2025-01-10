@@ -17,15 +17,27 @@ const LOCAL_STORAGE_KEY = 'sc-scan-data';
 
 const Home: React.FC = () => {
   const { width } = useWindowSize();
-  const isMobile = width <= 768;
+  const [isLoading, setIsLoading] = useState(true);
+  const [isMobile, setIsMobile] = useState(false);
 
-  const [data, setData] = useState<Code[]>(codes);
+  useEffect(() => {
+    setIsMobile(width <= 768);
+    setIsLoading(false);
+  }, [width]);
+
+  const [data, setData] = useState<Code[]>(() => {
+    if (typeof window !== 'undefined') {
+      const savedData = localStorage.getItem(LOCAL_STORAGE_KEY);
+      return savedData ? JSON.parse(savedData) : codes;
+    }
+    return codes;
+  });
+
   const [selectedRows, setSelectedRows] = useState<Code[]>([]);
   const [alertMessage, setAlertMessage] = useState<string | null>(null);
   const [isDataLoaded, setIsDataLoaded] = useState(false);
 
   useEffect(() => {
-    // Load data from localStorage when the component mounts (client-side only)
     if (typeof window !== 'undefined') {
       const savedData = localStorage.getItem(LOCAL_STORAGE_KEY);
       if (savedData) {
@@ -49,7 +61,6 @@ const Home: React.FC = () => {
 
   const handleExport = async () => {
     await exportToCSV(data, setData);
-    // Clear data from localStorage after exporting
     if (typeof window !== 'undefined') {
       localStorage.removeItem(LOCAL_STORAGE_KEY);
     }
@@ -61,15 +72,19 @@ const Home: React.FC = () => {
 
     if (!exists) {
       scan(trimmedData, data, setData);
-      setAlertMessage(null); // Clear any previous alert message
+      setAlertMessage(null);
     } else {
-      setAlertMessage('The scanned data already exists in the list.');
-      // Clear the alert message after 5 seconds
-      setTimeout(() => {
-        setAlertMessage(null);
-      }, 5000);
+      setAlertMessage('Dieser Barcode wurde bereits gescannt.');
     }
   }, [data]);
+
+  const checkDuplicate = useCallback((scannedData: string) => {
+    return data.some(item => item.dmc === scannedData.trim());
+  }, [data]);
+
+  if (isLoading) {
+    return null;
+  }
 
   return (
     <div className="min-h-screen bg-[#f5f5f5]">
@@ -94,30 +109,25 @@ const Home: React.FC = () => {
       </header>
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {alertMessage && (
-          <div className="mb-4 p-4 text-sm text-red-700 bg-red-100 rounded-lg" role="alert">
-            {alertMessage}
-          </div>
-        )}
         <div className="bg-white rounded-lg shadow-sm p-6 mb-6">
-
-        {isMobile ? (
-          <MobileBarcodeScanner onScan={handleScan} />
-        ) : (
-          <BarcodeScanner onScan={handleScan} />
-        )}
-        <DataTable
-          columns={columns}
-          data={data}
-          selectedRows={selectedRows}
-          setSelectedRows={setSelectedRows}
-        />
-        {selectedRows && data && (
-             <div className="flex justify-end mt-6 space-x-4">
-             <DeleteButton onDelete={handleDelete} disabled={selectedRows?.length === 0} /> 
-             <ExportButton onExport={handleExport} disabled={data?.length === 0} />
-           </div>
+          {isMobile ? (
+            <MobileBarcodeScanner onScan={handleScan} error={alertMessage} checkDuplicate={checkDuplicate} />
+          ) : (
+            <BarcodeScanner onScan={handleScan} error={alertMessage} checkDuplicate={checkDuplicate} />
           )}
+        </div>
+        
+        <div className="bg-white rounded-lg shadow-sm p-6">
+          <DataTable
+            columns={columns}
+            data={data}
+            selectedRows={selectedRows}
+            setSelectedRows={setSelectedRows}
+          />
+          
+          <div className="flex justify-end mt-6 space-x-4">
+            <DeleteButton onDelete={handleDelete} disabled={selectedRows.length === 0} /> 
+            <ExportButton onExport={handleExport} disabled={data.length === 0} />
           </div>
       </main>
     </div>
