@@ -7,7 +7,7 @@ const ExportButton: React.FC<{ onExport: () => void; disabled: boolean }> = ({ o
       className={`btn-primary ${disabled ? "opacity-50 cursor-not-allowed" : ""}`}
       disabled={disabled}
     >
-      Übertragen
+      Download CSV-Datei
     </button>
   );
 };

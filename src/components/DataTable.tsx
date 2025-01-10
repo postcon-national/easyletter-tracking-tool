@@ -1,156 +1,302 @@
 "use client"
 
-import React, { useState, useEffect } from 'react';
-import { Column, StatusType } from '@/types/types';
+import React, { useState } from 'react';
+import { Code, Column } from '@/types/types';
 import StatusTag from './StatusTag';
-import {
-  useReactTable,
-  getCoreRowModel,
-  getPaginationRowModel,
-  getSortedRowModel,
-  getFilteredRowModel,
-  flexRender,
-  SortingState,
-  ColumnDef,
-  CellContext,
-} from '@tanstack/react-table';
 
-interface TableProps<T> {
-  columns: Array<Column<T>>;
-  data: T[];
-  selectedRows: T[];
-  setSelectedRows: (rows: T[]) => void;
+interface DataTableProps {
+  columns: Array<Column<Code>>;
+  data: Code[];
+  selectedRows: Code[];
+  setSelectedRows: (rows: Code[]) => void;
 }
 
-export default function DataTable<T extends { id: string }>(props: TableProps<T>) {
-  const { columns, data, selectedRows, setSelectedRows } = props;
-  const [sorting, setSorting] = useState<SortingState>([]);
-  const [globalFilter, setGlobalFilter] = useState('');
-  const [selectAll, setSelectAll] = useState(false);
+type SortConfig = {
+  key: keyof Code | null;
+  direction: 'asc' | 'desc';
+};
 
-  // Convert our columns to TanStack Table format
-  const tableColumns: ColumnDef<T>[] = [
-    {
-      id: 'select',
-      header: () => (
-        <input
-          type="checkbox"
-          checked={selectAll}
-          onChange={() => setSelectAll(!selectAll)}
-          className="form-checkbox h-4 w-4 text-indigo-600 transition duration-150 ease-in-out"
-        />
-      ),
-      cell: ({ row }) => (
-        <input
-          type="checkbox"
-          checked={selectedRows.includes(row.original)}
-          onChange={() => handleSelectRow(row.original)}
-          className="form-checkbox h-4 w-4 text-indigo-600 transition duration-150 ease-in-out"
-        />
-      ),
-      enableSorting: false,
-      enableGlobalFilter: false,
-    },
-    ...columns.map(col => ({
-      id: String(col.key),
-      accessorKey: col.key,
-      header: col.label,
-      cell: (props: CellContext<T, unknown>) => {
-        const value = props.getValue() as T[keyof T];
-        if (col.key === 'status') {
-          return <StatusTag status={value as StatusType} />;
-        }
-        if (col.format) {
-          return col.format(value);
-        }
-        return String(value);
-      },
-    })),
-  ];
+const ITEMS_PER_PAGE = 10;
 
-  const table = useReactTable({
-    data,
-    columns: tableColumns,
-    state: {
-      sorting,
-      globalFilter,
-    },
-    onSortingChange: setSorting,
-    onGlobalFilterChange: setGlobalFilter,
-    getCoreRowModel: getCoreRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
-    getSortedRowModel: getSortedRowModel(),
-    getFilteredRowModel: getFilteredRowModel(),
-  });
+const DataTable: React.FC<DataTableProps> = ({
+  columns,
+  data,
+  selectedRows,
+  setSelectedRows,
+}) => {
+  const [searchQuery, setSearchQuery] = useState('');
+  const [sortConfig, setSortConfig] = useState<SortConfig>({ key: null, direction: 'asc' });
+  const [currentPage, setCurrentPage] = useState(1);
 
-  useEffect(() => {
-    if (selectAll) {
-      setSelectedRows(data);
-    } else {
-      setSelectedRows([]);
-    }
-  }, [selectAll, data, setSelectedRows]);
-
-  const handleSelectRow = (row: T) => {
-    if (selectedRows?.includes(row)) {
-      setSelectedRows(selectedRows?.filter((r) => r !== row));
+  const handleSelectRow = (row: Code) => {
+    if (selectedRows.includes(row)) {
+      setSelectedRows(selectedRows.filter((r) => r !== row));
     } else {
       setSelectedRows([...selectedRows, row]);
     }
   };
 
+  const handleSelectAll = () => {
+    if (selectedRows.length === data.length) {
+      setSelectedRows([]);
+    } else {
+      setSelectedRows([...data]);
+    }
+  };
+
+  const handleSort = (key: keyof Code) => {
+    let direction: 'asc' | 'desc' = 'asc';
+    if (sortConfig.key === key && sortConfig.direction === 'asc') {
+      direction = 'desc';
+    }
+    setSortConfig({ key, direction });
+  };
+
+  const sortedData = React.useMemo(() => {
+    if (!sortConfig.key) return data;
+
+    return [...data].sort((a, b) => {
+      if (a[sortConfig.key!] < b[sortConfig.key!]) {
+        return sortConfig.direction === 'asc' ? -1 : 1;
+      }
+      if (a[sortConfig.key!] > b[sortConfig.key!]) {
+        return sortConfig.direction === 'asc' ? 1 : -1;
+      }
+      return 0;
+    });
+  }, [data, sortConfig]);
+
+  const filteredData = sortedData.filter(row => 
+    Object.values(row).some(value => 
+      value.toString().toLowerCase().includes(searchQuery.toLowerCase())
+    )
+  );
+
+  // Pagination
+  const totalPages = Math.ceil(filteredData.length / ITEMS_PER_PAGE);
+  const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
+  const paginatedData = filteredData.slice(startIndex, startIndex + ITEMS_PER_PAGE);
+
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+  };
+
+  const renderPaginationButtons = () => {
+    const buttons = [];
+    const maxVisiblePages = 5;
+    let startPage = Math.max(1, currentPage - Math.floor(maxVisiblePages / 2));
+    const endPage = Math.min(totalPages, startPage + maxVisiblePages - 1);
+
+    if (endPage - startPage + 1 < maxVisiblePages) {
+      startPage = Math.max(1, endPage - maxVisiblePages + 1);
+    }
+
+    // Previous button
+    buttons.push(
+      <button
+        key="prev"
+        onClick={() => handlePageChange(currentPage - 1)}
+        disabled={currentPage === 1}
+        className="px-3 py-1 rounded border border-gray-200 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 transition-colors"
+      >
+        ←
+      </button>
+    );
+
+    // First page
+    if (startPage > 1) {
+      buttons.push(
+        <button
+          key={1}
+          onClick={() => handlePageChange(1)}
+          className="px-3 py-1 rounded hover:bg-gray-50 transition-colors"
+        >
+          1
+        </button>
+      );
+      if (startPage > 2) {
+        buttons.push(
+          <span key="ellipsis1" className="px-2">
+            ...
+          </span>
+        );
+      }
+    }
+
+    // Page numbers
+    for (let i = startPage; i <= endPage; i++) {
+      buttons.push(
+        <button
+          key={i}
+          onClick={() => handlePageChange(i)}
+          className={`px-3 py-1 rounded transition-colors ${
+            currentPage === i
+              ? 'bg-[var(--dvs-orange)] text-white'
+              : 'hover:bg-gray-50'
+          }`}
+        >
+          {i}
+        </button>
+      );
+    }
+
+    // Last page
+    if (endPage < totalPages) {
+      if (endPage < totalPages - 1) {
+        buttons.push(
+          <span key="ellipsis2" className="px-2">
+            ...
+          </span>
+        );
+      }
+      buttons.push(
+        <button
+          key={totalPages}
+          onClick={() => handlePageChange(totalPages)}
+          className="px-3 py-1 rounded hover:bg-gray-50 transition-colors"
+        >
+          {totalPages}
+        </button>
+      );
+    }
+
+    // Next button
+    buttons.push(
+      <button
+        key="next"
+        onClick={() => handlePageChange(currentPage + 1)}
+        disabled={currentPage === totalPages}
+        className="px-3 py-1 rounded border border-gray-200 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 transition-colors"
+      >
+        →
+      </button>
+    );
+
+    return buttons;
+  };
+
+  if (data.length === 0) {
+    return (
+      <div className="text-center py-12 bg-[var(--dvs-gray-light)] rounded-lg">
+        <div className="flex flex-col items-center gap-4">
+          <div className="w-16 h-16 rounded-full bg-white flex items-center justify-center shadow-sm">
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-[var(--dvs-gray)]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 4v1m6 11h2m-6 0h-2m4-7h.01M5 20h14a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+            </svg>
+          </div>
+          <div className="font-geist-sans">
+            <h3 className="text-lg font-medium text-[var(--dvs-gray-dark)]">Keine Barcodes gescannt</h3>
+            <p className="text-[var(--dvs-gray)] mt-1">Scannen Sie einen Barcode, um ihn der Liste hinzuzufügen.</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-4">
-      {/* Search Input */}
+      {/* Search and Info Bar */}
       <div className="flex justify-between items-center">
         <div className="relative">
           <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-            <svg className="h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+            <svg className="h-5 w-5 text-[var(--dvs-gray)]" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
               <path fillRule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clipRule="evenodd" />
             </svg>
           </div>
           <input
             type="text"
-            value={globalFilter ?? ''}
-            onChange={e => setGlobalFilter(e.target.value)}
+            value={searchQuery}
+            onChange={(e) => {
+              setSearchQuery(e.target.value);
+              setCurrentPage(1); // Reset to first page on search
+            }}
             placeholder="Suchen..."
-            className="p-2 pl-10 border rounded w-64 focus:outline-none focus:ring-2 focus:ring-[#ff6600]/20 focus:border-[#ff6600] mt-4"
+            className="pl-10 pr-4 py-2 border rounded-lg text-sm text-[var(--dvs-gray-dark)] focus:outline-none focus:ring-0 focus:border-[var(--dvs-orange)] w-64 font-geist-sans transition-colors"
           />
         </div>
-        <div className="text-sm text-gray-500">
-          {table.getFilteredRowModel().rows.length} Einträge gefunden
+        <div className="text-sm text-[var(--dvs-gray)] font-geist-sans">
+          {filteredData.length} {filteredData.length === 1 ? 'Eintrag' : 'Einträge'} gefunden
+          {selectedRows.length > 0 && (
+            <span className="ml-2 text-[var(--dvs-orange)]">
+              • {selectedRows.length} {selectedRows.length === 1 ? 'Eintrag' : 'Einträge'} ausgewählt
+            </span>
+          )}
         </div>
       </div>
 
       {/* Table */}
-      <div className="overflow-x-auto rounded-lg shadow-md">
-        <table className="min-w-full divide-y divide-gray-200 bg-white">
-          <thead className="bg-gray-50">
-            {table.getHeaderGroups().map(headerGroup => (
-              <tr key={headerGroup.id}>
-                {headerGroup.headers.map(header => (
-                  <th
-                    key={header.id}
-                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
-                    onClick={header.column.getToggleSortingHandler()}
-                  >
-                    {flexRender(header.column.columnDef.header, header.getContext())}
-                    {header.column.getIsSorted() && (
-                      <span className="ml-2">
-                        {header.column.getIsSorted() === 'asc' ? '↑' : '↓'}
-                      </span>
-                    )}
-                  </th>
-                ))}
-              </tr>
-            ))}
+      <div className="overflow-x-auto rounded-lg shadow-sm border border-gray-200">
+        <table className="min-w-full divide-y divide-gray-200">
+          <thead className="bg-[var(--dvs-gray-light)]">
+            <tr>
+              <th className="px-4 py-3 w-10">
+                <input
+                  type="checkbox"
+                  checked={selectedRows.length === data.length && data.length > 0}
+                  onChange={handleSelectAll}
+                  className="form-checkbox h-4 w-4 rounded border-gray-200 text-[var(--dvs-orange)] focus:ring-0 focus:border-[var(--dvs-orange)] transition-colors checked:bg-[var(--dvs-orange)] checked:hover:bg-[var(--dvs-orange)] hover:bg-[var(--dvs-orange)]/10"
+                />
+              </th>
+              {columns.map((column) => (
+                <th
+                  key={column.key.toString()}
+                  onClick={() => handleSort(column.key)}
+                  className="px-4 py-3 text-left text-xs font-medium text-[var(--dvs-gray)] uppercase tracking-wider font-geist-sans cursor-pointer group hover:text-[var(--dvs-gray-dark)] select-none"
+                >
+                  <div className="flex items-center gap-1">
+                    {column.label}
+                    <div className="flex flex-col text-[var(--dvs-orange)] opacity-0 group-hover:opacity-50">
+                      {sortConfig.key === column.key ? (
+                        sortConfig.direction === 'asc' ? (
+                          <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                            <path fillRule="evenodd" d="M14.707 10.293a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 111.414-1.414L10 13.586l3.293-3.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                          </svg>
+                        ) : (
+                          <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                            <path fillRule="evenodd" d="M5.293 9.707a1 1 0 010-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 01-1.414 1.414L10 6.414l-3.293 3.293a1 1 0 01-1.414 0z" clipRule="evenodd" />
+                          </svg>
+                        )
+                      ) : (
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                          <path fillRule="evenodd" d="M10 3a1 1 0 01.707.293l3 3a1 1 0 01-1.414 1.414L10 5.414 7.707 7.707a1 1 0 01-1.414-1.414l3-3A1 1 0 0110 3zm-3.707 9.293a1 1 0 011.414 0L10 14.586l2.293-2.293a1 1 0 011.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clipRule="evenodd" />
+                        </svg>
+                      )}
+                    </div>
+                  </div>
+                </th>
+              ))}
+            </tr>
           </thead>
-          <tbody className="divide-y divide-gray-200">
-            {table.getRowModel().rows.map(row => (
-              <tr key={row.id} className="hover:bg-gray-100">
-                {row.getVisibleCells().map(cell => (
-                  <td key={cell.id} className="px-6 py-4 text-sm text-gray-700">
-                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
+          <tbody className="divide-y divide-gray-200 bg-white">
+            {paginatedData.map((row) => (
+              <tr
+                key={row.id}
+                className={`transition-colors ${
+                  selectedRows.includes(row) 
+                    ? 'bg-[#fff9f5]' 
+                    : 'hover:bg-[#fafafa]'
+                }`}
+              >
+                <td className="px-4 py-3">
+                  <input
+                    type="checkbox"
+                    checked={selectedRows.includes(row)}
+                    onChange={() => handleSelectRow(row)}
+                    className="form-checkbox h-4 w-4 rounded border-gray-200 text-[var(--dvs-orange)] focus:ring-0 focus:border-[var(--dvs-orange)] transition-colors checked:bg-[var(--dvs-orange)] checked:hover:bg-[var(--dvs-orange)] hover:bg-[var(--dvs-orange)]/10"
+                  />
+                </td>
+                {columns.map((column) => (
+                  <td
+                    key={`${row.id}-${column.key.toString()}`}
+                    className="px-4 py-3 text-sm text-[var(--dvs-gray-dark)] font-geist-sans whitespace-nowrap"
+                  >
+                    {column.key === 'status' ? (
+                      <StatusTag status={row[column.key]} />
+                    ) : column.format ? (
+                      column.format(row[column.key])
+                    ) : (
+                      row[column.key]
+                    )}
                   </td>
                 ))}
               </tr>
@@ -160,55 +306,13 @@ export default function DataTable<T extends { id: string }>(props: TableProps<T>
       </div>
 
       {/* Pagination */}
-      <div className="flex items-center justify-between">
-        <div className="flex gap-2">
-          <button
-            onClick={() => table.setPageIndex(0)}
-            disabled={!table.getCanPreviousPage()}
-            className="px-3 py-1 border rounded hover:bg-gray-100 disabled:opacity-50"
-          >
-            {'<<'}
-          </button>
-          <button
-            onClick={() => table.previousPage()}
-            disabled={!table.getCanPreviousPage()}
-            className="px-3 py-1 border rounded hover:bg-gray-100 disabled:opacity-50"
-          >
-            {'<'}
-          </button>
-          <button
-            onClick={() => table.nextPage()}
-            disabled={!table.getCanNextPage()}
-            className="px-3 py-1 border rounded hover:bg-gray-100 disabled:opacity-50"
-          >
-            {'>'}
-          </button>
-          <button
-            onClick={() => table.setPageIndex(table.getPageCount() - 1)}
-            disabled={!table.getCanNextPage()}
-            className="px-3 py-1 border rounded hover:bg-gray-100 disabled:opacity-50"
-          >
-            {'>>'}
-          </button>
+      {totalPages > 1 && (
+        <div className="flex justify-center gap-2 items-center font-geist-sans">
+          {renderPaginationButtons()}
         </div>
-        <div className="flex items-center gap-2">
-          <span className="text-sm text-gray-700">
-            Seite {table.getState().pagination.pageIndex + 1} von{' '}
-            {table.getPageCount()}
-          </span>
-          <select
-            value={table.getState().pagination.pageSize}
-            onChange={e => table.setPageSize(Number(e.target.value))}
-            className="p-1 border rounded"
-          >
-            {[10, 20, 30, 40, 50].map(pageSize => (
-              <option key={pageSize} value={pageSize}>
-                {pageSize} pro Seite
-              </option>
-            ))}
-          </select>
-        </div>
-      </div>
+      )}
     </div>
   );
 }
+
+export default DataTable;
