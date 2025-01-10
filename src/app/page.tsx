@@ -63,7 +63,7 @@ const Home: React.FC = () => {
       scan(trimmedData, data, setData);
       setAlertMessage(null); // Clear any previous alert message
     } else {
-      setAlertMessage('The scanned data already exists in the list.');
+      setAlertMessage('Die gescannten Daten sind bereits in der Liste vorhanden.');
       // Clear the alert message after 5 seconds
       setTimeout(() => {
         setAlertMessage(null);
