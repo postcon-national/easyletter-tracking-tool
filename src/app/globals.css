@@ -3,6 +3,12 @@
 @tailwind utilities;
 
 :root {
+  /* DVS Corporate Colors */
+  --dvs-orange: #ff6600;
+  --dvs-orange-light: #ff8533;
+  --dvs-gray-dark: #4a4a4a;
+  --dvs-gray: #666666;
+  --dvs-gray-light: #f5f5f5;
   --background: #ffffff;
 }
 
@@ -13,7 +19,26 @@
 }
 
 body {
-  color: var(--foreground);
+  color: var(--dvs-gray-dark);
   background: var(--background);
   font-family: Arial, Helvetica, sans-serif;
+}
+
+/* Custom button styles */
+.btn-primary {
+  @apply bg-[#ff6600] hover:bg-[#ff8533] text-white font-medium py-2 px-4 rounded transition-colors;
+}
+
+.btn-secondary {
+  @apply bg-[#f5f5f5] hover:bg-gray-200 text-[#666666] font-medium py-2 px-4 rounded transition-colors;
+}
+
+/* Table styles */
+.table-header {
+  @apply bg-[#f5f5f5] text-[#4a4a4a] text-xs font-medium uppercase tracking-wider;
+}
+
+/* Input styles */
+.input-primary {
+  @apply border-[#666666] focus:border-[#ff6600] focus:ring-[#ff6600] rounded;
 }

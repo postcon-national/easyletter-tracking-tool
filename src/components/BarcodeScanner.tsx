@@ -119,7 +119,11 @@ const BarcodeScanner: React.FC<BarcodeScannerProps> = ({ onScan }) => {
         onChange={handleChange}
         onKeyDown={handleKeyDown}
         placeholder="Bitte Barcode scannen oder eingeben"
-        className={`border p-2 rounded w-full lg:w-1/2 ${error ? 'border-red-500' : 'text-gray-700'}`}
+        className={`w-full p-3 border rounded-lg focus:outline-none focus:ring-2 ${
+          error 
+            ? 'border-red-500 focus:border-red-500 focus:ring-red-200' 
+            : 'border-[#666666] focus:border-[#ff6600] focus:ring-[#ff6600]/20'
+        }`}
         autoFocus
       />
       {error && (
