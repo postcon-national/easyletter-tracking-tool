@@ -30,21 +30,21 @@ export const columns: Array<Column<Code>> = [
 ];
 
 // Function to generate a random date within the last 30 days
-const getRandomDate = () => {
-  const end = new Date();
-  const start = new Date();
-  start.setDate(start.getDate() - 30);
-  return new Date(
-    start.getTime() + Math.random() * (end.getTime() - start.getTime())
-  ).toISOString();
-};
+// const getRandomDate = () => {
+//   const end = new Date();
+//   const start = new Date();
+//   start.setDate(start.getDate() - 30);
+//   return new Date(
+//     start.getTime() + Math.random() * (end.getTime() - start.getTime())
+//   ).toISOString();
+// };
 
 // Function to generate a random sendungsId (16 digits)
-const generateSendungsId = () => {
-  return Array.from({ length: 16 }, () => Math.floor(Math.random() * 10)).join(
-    ""
-  );
-};
+// const generateSendungsId = () => {
+//   return Array.from({ length: 16 }, () => Math.floor(Math.random() * 10)).join(
+//     ""
+//   );
+// };
 
 // Function to generate test data
 // const generateTestData = (count: number): Code[] => {
