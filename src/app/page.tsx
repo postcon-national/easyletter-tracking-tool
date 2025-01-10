@@ -129,6 +129,7 @@ const Home: React.FC = () => {
             <DeleteButton onDelete={handleDelete} disabled={selectedRows.length === 0} /> 
             <ExportButton onExport={handleExport} disabled={data.length === 0} />
           </div>
+        </div>
       </main>
     </div>
   );
