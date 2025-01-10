@@ -1,78 +1,77 @@
 pipeline {
-options {
-    buildDiscarder(logRotator(numToKeepStr: '10'))
-}
-agent {label 'slave'}
-
-stages {
-    stage('Cleanup Workspace') {
-        steps {
-            cleanWs()
-        }
+    options {
+        buildDiscarder(logRotator(numToKeepStr: '10'))
+    }
+    agent {label 'slave'}
+    
+    environment {
+        appName = 'sc-scan'
+        dockerRegistry = 'docker-test.postcon.net'
     }
 
-environment {
-    appName = 'sc-scan'
-    dockerRegistry = 'docker-test.postcon.net'
-}
-
-stages {
-    stage('Checkout Source') {
-        steps {
-            script {
-                scmVars = checkout scm
-                git branch: "${scmVars.GIT_BRANCH}", credentialsId: 'CI-Runner', url: "${scmVars.GIT_URL}"
-                // Ensure we're in the repository root
-                sh 'pwd && ls -la'
+    stages {
+        stage('Cleanup Workspace') {
+            steps {
+                deleteDir()
+            }
+        }
+        
+        stage('Checkout Source') {
+            steps {
+                script {
+                    scmVars = checkout scm
+                    git branch: "${scmVars.GIT_BRANCH}", credentialsId: 'CI-Runner', url: "${scmVars.GIT_URL}"
+                    // Ensure we're in the repository root
+                    sh 'pwd && ls -la'
+                }
+            }
+        }
+        
+        stage('Build') {
+            steps {
+                script {
+                    container('node') {
+                        sh 'npm ci'
+                        sh 'npm run build'
+                    }
+                }
+            }
+        }
+        
+        stage('Build image') {
+            steps {
+                script {
+                    container('mdocker') {
+                        version = "${scmVars.GIT_BRANCH}-${env.BUILD_ID}"
+                        myapp = docker.build("${dockerRegistry}/${appName}:${version}")
+                    }
+                }
+            }
+        }
+        
+        stage('Push image') {
+            steps {
+                script {
+                    container('mdocker') {
+                        docker.withRegistry("https://${dockerRegistry}", 'docker-registry-credentials') {
+                            myapp.push("${version}")
+                            myapp.push('latest')
+                        }
+                    }
+                }
+            }
+        }
+        
+        stage('Deploy App') {
+            steps {
+                script {
+                    container('mdocker') {
+                        withKubeConfig([credentialsId: "kubeconfig_file"]) {
+                            sh "kubectl apply -f k8s/ -n dev"
+                        }
+                    }
+                }
             }
         }
     }
-    
-    stage('Build') {
-    steps {
-        script {
-        container('node') {
-            sh 'npm ci'
-            sh 'npm run build'
-        }
-        }
-    }
-    }
-    
-    stage('Build image') {
-    steps {
-        script {
-        container('mdocker') {
-            version = "${scmVars.GIT_BRANCH}-${env.BUILD_ID}"
-            myapp = docker.build("${dockerRegistry}/${appName}:${version}")
-        }
-        }
-    }
-    }
-    
-    stage('Push image') {
-    steps {
-        script {
-        container('mdocker') {
-            docker.withRegistry("https://${dockerRegistry}", 'docker-registry-credentials') {
-            myapp.push("${version}")
-            myapp.push('latest')
-            }
-        }
-        }
-    }
-    }
-    
-    stage('Deploy App') {
-    steps {
-        script {
-        container('mdocker') {
-            withKubeConfig([credentialsId: "kubeconfig_file"]) {
-            sh "kubectl apply -f k8s/ -n dev"
-            }
-        }
-        }
-    }
-    }
-}
 }
