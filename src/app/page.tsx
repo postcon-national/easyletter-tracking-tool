@@ -20,8 +20,10 @@ const Home: React.FC = () => {
 
   const [data, setData] = useState<Code[]>(() => {
     // Load data from localStorage when the component mounts
-    const savedData = localStorage.getItem(LOCAL_STORAGE_KEY);
-    return savedData ? JSON.parse(savedData) : codes;
+    if (typeof window !== 'undefined') {
+      const savedData = localStorage.getItem(LOCAL_STORAGE_KEY);
+      return savedData ? JSON.parse(savedData) : codes;
+    }
   });
 
   const [selectedRows, setSelectedRows] = useState<Code[]>([]);
