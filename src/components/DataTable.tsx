@@ -7,7 +7,7 @@ interface TableProps<T> {
   columns: Array<Column<T>>;
   data: T[];
   selectedRows: T[];
-  setSelectedRows: React.Dispatch<React.SetStateAction<T[]>>;
+  setSelectedRows: (rows: T[]) => void;
 }
 
 export default function DataTable<T extends { id: string }>(props: TableProps<T>) {
@@ -28,6 +28,17 @@ export default function DataTable<T extends { id: string }>(props: TableProps<T>
     } else {
       setSelectedRows([...selectedRows, row]);
     }
+  };
+
+  const renderCell = (column: Column<T>, value: any) => {
+    if (column.format) {
+      const formattedValue = column.format(value);
+      if (column.key === 'status') {
+        return <div dangerouslySetInnerHTML={{ __html: formattedValue }} />;
+      }
+      return formattedValue;
+    }
+    return String(value);
   };
 
   return (
@@ -70,7 +81,7 @@ export default function DataTable<T extends { id: string }>(props: TableProps<T>
                   key={String(column.key)}
                   className={`px-6 py-4 text-sm text-gray-700 ${column.key === 'id' ? 'hidden' : ''}`}
                 >
-                  {String(row[column.key])}
+                  {renderCell(column, row[column.key])}
                 </td>
               ))}
             </tr>

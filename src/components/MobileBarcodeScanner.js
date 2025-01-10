@@ -1,10 +1,10 @@
-import React, { useRef, useEffect, useState } from 'react';
-import jsQR from 'jsqr';
+import React, { useRef, useEffect, useState } from "react";
+import jsQR from "jsqr";
 
 const MobileBarcodeScanner = ({ onScan }) => {
   const videoRef = useRef(null);
   const canvasRef = useRef(null);
-  const [scannedData, setScannedData] = useState('');
+  const [scannedData, setScannedData] = useState("");
   const [scannedList, setScannedList] = useState([]);
   const [wait, setWait] = useState(false);
 
@@ -17,19 +17,19 @@ const MobileBarcodeScanner = ({ onScan }) => {
   useEffect(() => {
     const video = videoRef.current;
     const canvas = canvasRef.current;
-    const context = canvas.getContext('2d', { willReadFrequently: true });
+    const context = canvas.getContext("2d", { willReadFrequently: true });
 
     const startVideo = async () => {
       try {
         const stream = await navigator.mediaDevices.getUserMedia({
-          video: { facingMode: 'environment' },
+          video: { facingMode: "environment" },
         });
         video.srcObject = stream;
-        video.setAttribute('playsinline', true); // Required to tell iOS safari we don't want fullscreen
+        video.setAttribute("playsinline", true);
         video.play();
         requestAnimationFrame(tick);
       } catch (err) {
-        console.error('Error accessing camera:', err);
+        console.error("Error accessing camera:", err);
       }
     };
 
@@ -41,9 +41,14 @@ const MobileBarcodeScanner = ({ onScan }) => {
         canvas.height = video.videoHeight;
         canvas.width = video.videoWidth;
         context.drawImage(video, 0, 0, canvas.width, canvas.height);
-        const imageData = context.getImageData(0, 0, canvas.width, canvas.height);
+        const imageData = context.getImageData(
+          0,
+          0,
+          canvas.width,
+          canvas.height
+        );
         const code = jsQR(imageData.data, imageData.width, imageData.height, {
-          inversionAttempts: 'dontInvert',
+          inversionAttempts: "dontInvert",
         });
         if (code) {
           setScannedData(code.data);
@@ -63,12 +68,11 @@ const MobileBarcodeScanner = ({ onScan }) => {
     };
   }, [wait]);
 
-
   const handleAddToList = () => {
     if (scannedData) {
       setScannedList([...scannedList, scannedData]);
       onScan(scannedData); // Send the scanned data to the parent component
-      setScannedData(''); // Clear the input after adding to the list
+      setScannedData(""); // Clear the input after adding to the list
       setWait(false); // Allow scanning again
     }
   };
@@ -88,7 +92,7 @@ const MobileBarcodeScanner = ({ onScan }) => {
         onClick={handleAddToList}
         className="mt-2 p-2 bg-blue-500 text-white rounded"
       >
-        📱 Accept QR 
+        📱 Accept QR
       </button>
     </div>
   );

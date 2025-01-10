@@ -34,31 +34,50 @@ const Home: React.FC = () => {
       sidDVS: scannedData.slice(4, 20),
       sidZup: scannedData.slice(4, 20),
       dmc: scannedData,
-      gam: new Date().toISOString().split('T')[0],
-      status: 'Delivered',
-      erfasser: 'John Doe',
-      zust: 'Jane Smith',
+      gam: new Date().toISOString(),
+      status: 'VALID',
+      erfasser: '4202',
+      zust: '4202',
     };
     setData(prevData => [...prevData, newEntry]);
   }, [data.length]);
 
   return (
-    <div className="container mx-auto p-4 space-y-4">
-      <header className="flex items-center justify-between py-4">
-        <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSs5fSe7cesYu_vRdemQYmiXaa5mXb3dtHyPg&s" alt="Logo" className="h-12" />
-        <h1 className="text-xl font-bold text-orange-500">Scanner Application</h1>
+    <div className="container mx-auto p-4 space-y-6">
+      <header className="bg-white shadow-sm rounded-lg">
+        <div className="max-w-7xl mx-auto px-8 py-6">
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="text-2xl font-semibold text-gray-800">SC-Scan</h1>
+              <p className="text-sm text-gray-500 mt-1">Sortierzentrum Eingangsscan</p>
+            </div>
+            <div className="flex items-center space-x-8">
+              <div className="border-l border-gray-200 h-12" />
+              <img 
+                src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSs5fSe7cesYu_vRdemQYmiXaa5mXb3dtHyPg&s" 
+                alt="DVS Logo" 
+                className="h-14 w-auto"
+              />
+            </div>
+          </div>
+        </div>
       </header>
-      {isMobile ? <MobileBarcodeScanner onScan={handleScan} /> : <BarcodeScanner onScan={handleScan} />}
-      <DataTable
-        columns={columns}
-        data={data}
-        selectedRows={selectedRows}
-        setSelectedRows={setSelectedRows}
-      />
-      <div className="flex justify-end mt-4 space-x-4">
-        <DeleteButton onDelete={handleDelete} disabled={selectedRows.length === 0} /> 
-        <ExportButton onExport={handleExport} disabled={data.length === 0} />
-      </div>
+
+      <main className="space-y-6">
+        {isMobile ? <MobileBarcodeScanner onScan={handleScan} /> : <BarcodeScanner onScan={handleScan} />}
+        
+        <DataTable
+          columns={columns}
+          data={data}
+          selectedRows={selectedRows}
+          setSelectedRows={setSelectedRows}
+        />
+        
+        <div className="flex justify-end space-x-4">
+          <DeleteButton onDelete={handleDelete} disabled={selectedRows.length === 0} /> 
+          <ExportButton onExport={handleExport} disabled={data.length === 0} />
+        </div>
+      </main>
     </div>
   );
 };

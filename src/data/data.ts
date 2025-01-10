@@ -1,41 +1,51 @@
-import { Column, Code } from '@/types/types';
+import { Column, Code } from "@/types/types";
+
+const formatDateTime = (dateStr: string) => {
+  const date = new Date(dateStr);
+  return date.toLocaleString("de-DE", {
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
+  });
+};
+
+type StatusType = "VALID" | "NON_VALID" | "REDIRECTED";
+
+const statusClasses: Record<StatusType, string> = {
+  VALID:
+    "bg-green-100 text-green-800 px-2 py-1 rounded-full text-xs font-medium",
+  NON_VALID:
+    "bg-red-100 text-red-800 px-2 py-1 rounded-full text-xs font-medium",
+  REDIRECTED:
+    "bg-yellow-100 text-yellow-800 px-2 py-1 rounded-full text-xs font-medium",
+};
+
+const formatStatus = (status: string) => {
+  return `<span class="${
+    statusClasses[status as StatusType] ||
+    "bg-gray-100 text-gray-800 px-2 py-1 rounded-full text-xs font-medium"
+  }">${status}</span>`;
+};
 
 export const columns: Array<Column<Code>> = [
-  { key: 'sidDVS', label: 'Sendungs-ID (DVS)' },
-  { key: 'sidZup', label: 'Sendungs-ID (ZUP)' },
-  { key: 'dmc', label: 'Datamatrix Code' },
-  { key: 'gam', label: 'Gescannt am' },
-  { key: 'status', label: 'Status' },
-  { key: 'erfasser', label: 'Erfasser' },
-  { key: 'zust', label: 'Zusteller' },
+  { key: "sidDVS", label: "Sendungs-ID (DVS)" },
+  { key: "sidZup", label: "Sendungs-ID (ZUP)" },
+  { key: "dmc", label: "Datamatrix Code" },
+  {
+    key: "gam",
+    label: "Gescannt am",
+    format: formatDateTime,
+  },
+  {
+    key: "status",
+    label: "Status",
+    format: formatStatus,
+  },
+  { key: "erfasser", label: "Erfasser" },
+  { key: "zust", label: "Zusteller" },
 ];
 
-export const codes: Code[] = [
-  // {
-  //   sidDVS: '123456',
-  //   sidZup: '654321',
-  //   dmc: 'ABC123',
-  //   gam: '2023-10-01',
-  //   status: 'Delivered',
-  //   erfasser: 'John Doe',
-  //   zust: 'Jane Smith',
-  // },
-  // {
-  //   sidDVS: '789012',
-  //   sidZup: '210987',
-  //   dmc: 'DEF456',
-  //   gam: '2023-10-02',
-  //   status: 'In Transit',
-  //   erfasser: 'Alice Johnson',
-  //   zust: 'Bob Brown',
-  // },
-  // {
-  //   sidDVS: '345678',
-  //   sidZup: '876543',
-  //   dmc: 'GHI789',
-  //   gam: '2023-10-03',
-  //   status: 'Pending',
-  //   erfasser: 'Charlie Davis',
-  //   zust: 'Eve White',
-  // },
-];
+export const codes: Code[] = [];
