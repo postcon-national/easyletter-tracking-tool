@@ -30,10 +30,10 @@ export async function POST(req) {
       status: 200,
       headers: {
         'Content-Type': 'text/csv; charset=utf-8',
-        'Content-Disposition': `attachment;`,
+        'Content-Disposition': `attachment; filename="export.csv"`,
       },
     });
-  } catch (error) {
+  } catch (err) {
     return NextResponse.json({ error: 'Failed to generate CSV' }, { status: 500 });
   }
 }

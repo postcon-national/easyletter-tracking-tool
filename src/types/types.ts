@@ -8,8 +8,8 @@ export interface Code {
   zust: string;
 }
 
-// types.ts (puedes usar el mismo archivo u otro distinto)
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export interface Column<T> {
   key: keyof T;
   label: string;

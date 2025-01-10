@@ -23,6 +23,7 @@ const Home: React.FC = () => {
     const savedData = localStorage.getItem(LOCAL_STORAGE_KEY);
     return savedData ? JSON.parse(savedData) : codes;
   });
+  
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [selectedRows, setSelectedRows] = useState<any[]>([]);
 
