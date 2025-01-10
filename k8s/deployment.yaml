@@ -1,0 +1,45 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sc-scan
+  namespace: dev
+  labels:
+    app: sc-scan
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: sc-scan
+  template:
+    metadata:
+      labels:
+        app: sc-scan
+    spec:
+      imagePullSecrets:
+        - name: docker-registry
+      containers:
+        - name: sc-scan
+          image: docker-test.postcon.net/sc-scan:latest
+          imagePullPolicy: Always
+          ports:
+            - name: web
+              containerPort: 3000
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "128Mi"
+            limits:
+              cpu: "500m"
+              memory: "512Mi"
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 3000
+            initialDelaySeconds: 10
+            periodSeconds: 5
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 3000
+            initialDelaySeconds: 15
+            periodSeconds: 10
