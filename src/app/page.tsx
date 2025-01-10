@@ -45,14 +45,12 @@ const Home: React.FC = () => {
     if (typeof window !== 'undefined') {
       localStorage.removeItem(LOCAL_STORAGE_KEY);
     }
-    setData([]);
   };
 
   const handleScan = useCallback((scannedData: string) => {
     const trimmedData = scannedData.trim();
     const exists = data.some(item => item.dmc === trimmedData);
 
-    debugger
     if (!exists) {
       scan(trimmedData, data, setData);
       setAlertMessage(null); // Clear any previous alert message
