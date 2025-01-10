@@ -47,24 +47,24 @@ const generateSendungsId = () => {
 };
 
 // Function to generate test data
-const generateTestData = (count: number): Code[] => {
-  return Array.from({ length: count }, (_, index) => {
-    const sendungsId = generateSendungsId();
-    const zustellpartnerId = String(Math.floor(Math.random() * 900) + 100); // Random 3-digit number
-    return {
-      id: (index + 1).toString(),
-      sidDVS: sendungsId,
-      sidZup: sendungsId,
-      dmc: `DVSC${sendungsId}23456${zustellpartnerId}1${String(
-        Math.floor(Math.random() * 90) + 10
-      )}`,
-      gam: getRandomDate(),
-      status: "VALID",
-      erfasser: "4202",
-      zust: zustellpartnerId,
-    };
-  });
-};
+// const generateTestData = (count: number): Code[] => {
+//   return Array.from({ length: count }, (_, index) => {
+//     const sendungsId = generateSendungsId();
+//     const zustellpartnerId = String(Math.floor(Math.random() * 900) + 100); // Random 3-digit number
+//     return {
+//       id: (index + 1).toString(),
+//       sidDVS: sendungsId,
+//       sidZup: sendungsId,
+//       dmc: `DVSC${sendungsId}23456${zustellpartnerId}1${String(
+//         Math.floor(Math.random() * 90) + 10
+//       )}`,
+//       gam: getRandomDate(),
+//       status: "VALID",
+//       erfasser: "4202",
+//       zust: zustellpartnerId,
+//     };
+//   });
+// };
 
 // Generate 5000 test entries
 // export const codes: Code[] = generateTestData(5000);
