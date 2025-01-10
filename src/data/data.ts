@@ -33,10 +33,10 @@ const formatStatus = (status: string) => {
 export const columns: Array<Column<Code>> = [
   { key: "sidDVS", label: "Sendungs-ID (DVS)" },
   { key: "sidZup", label: "Sendungs-ID (ZUP)" },
-  { key: "dmc", label: "Datamatrix Code" },
+  { key: "dmc", label: "Data-Matrix-Code" },
   {
     key: "gam",
-    label: "Gescannt am",
+    label: "Scan-Datum",
     format: formatDateTime,
   },
   {
@@ -44,8 +44,8 @@ export const columns: Array<Column<Code>> = [
     label: "Status",
     format: formatStatus,
   },
-  { key: "erfasser", label: "Erfasser" },
-  { key: "zust", label: "Zusteller" },
+  { key: "erfasser", label: "Erfasst von" },
+  { key: "zust", label: "ZUP" },
 ];
 
 export const codes: Code[] = [];

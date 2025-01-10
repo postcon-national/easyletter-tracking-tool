@@ -80,39 +80,42 @@ const Home: React.FC = () => {
   console.log(JSON.stringify(data, null, 2));
 
   return (
-    <div className="container mx-auto p-4 space-y-6">
-      <header className="bg-white shadow-sm rounded-lg">
-        <div className="max-w-7xl mx-auto px-8 py-6">
+    <div className="min-h-screen bg-[#f5f5f5]">
+      <header className="bg-white shadow-sm">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-2xl font-semibold text-gray-800">SC-Scan</h1>
-              <p className="text-sm text-gray-500 mt-1">Sortierzentrum Eingangsscan</p>
+              <h1 className="text-2xl font-bold text-[#4a4a4a]">SC-Scan</h1>
+              <p className="text-sm text-[#666666] mt-1">Sortierzentrum Eingangsscan</p>
             </div>
-            <div className="flex items-center space-x-8">
-              <div className="border-l border-gray-200 h-12" />
+            <div className="flex items-center">
               <img 
-                src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSs5fSe7cesYu_vRdemQYmiXaa5mXb3dtHyPg&s" 
+                src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSs5fSe7cesYu_vRdemQYmiXaa5mXb3dtHyPg&s"
                 alt="DVS Logo" 
-                className="h-14 w-auto"
+                className="h-12 w-auto object-contain"
               />
             </div>
           </div>
         </div>
       </header>
 
-      <main className="space-y-6">
-        {isMobile ? <MobileBarcodeScanner onScan={handleScan} /> : <BarcodeScanner onScan={handleScan} />}
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div className="bg-white rounded-lg shadow-sm p-6 mb-6">
+          {isMobile ? <MobileBarcodeScanner onScan={handleScan} /> : <BarcodeScanner onScan={handleScan} />}
+        </div>
         
-        <DataTable
-          columns={columns}
-          data={data}
-          selectedRows={selectedRows}
-          setSelectedRows={setSelectedRows}
-        />
-        
-        <div className="flex justify-end space-x-4">
-          <DeleteButton onDelete={handleDelete} disabled={selectedRows.length === 0} /> 
-          <ExportButton onExport={handleExport} disabled={data.length === 0} />
+        <div className="bg-white rounded-lg shadow-sm p-6">
+          <DataTable
+            columns={columns}
+            data={data}
+            selectedRows={selectedRows}
+            setSelectedRows={setSelectedRows}
+          />
+          
+          <div className="flex justify-end mt-6 space-x-4">
+            <DeleteButton onDelete={handleDelete} disabled={selectedRows.length === 0} /> 
+            <ExportButton onExport={handleExport} disabled={data.length === 0} />
+          </div>
         </div>
       </main>
     </div>

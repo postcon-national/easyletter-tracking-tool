@@ -4,10 +4,10 @@ const DeleteButton: React.FC<{ onDelete: () => void; disabled: boolean }> = ({ o
   return (
     <button
       onClick={onDelete}
-      className={"bg-red-500 text-white p-2 rounded" + (disabled ? " opacity-50 cursor-not-allowed" : "")}
+      className={`btn-secondary ${disabled ? "opacity-50 cursor-not-allowed" : ""}`}
       disabled={disabled}
     >
-        Auswahl entfernen    
+      Auswahl entfernen
     </button>
   );
 };

@@ -30,13 +30,12 @@ export default function DataTable<T extends { id: string }>(props: TableProps<T>
     }
   };
 
-  const renderCell = (column: Column<T>, value: any) => {
+  const renderCell = (column: Column<T>, value: T[keyof T]) => {
     if (column.format) {
-      const formattedValue = column.format(value);
       if (column.key === 'status') {
-        return <div dangerouslySetInnerHTML={{ __html: formattedValue }} />;
+        return <div dangerouslySetInnerHTML={{ __html: column.format(value) }} />;
       }
-      return formattedValue;
+      return column.format(value);
     }
     return String(value);
   };
