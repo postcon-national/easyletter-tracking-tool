@@ -31,8 +31,8 @@ const Home: React.FC = () => {
   const handleScan = useCallback((scannedData: string) => {
     const newEntry = {
       id: (data.length + 1).toString(),
-      sidDVS: scannedData.slice(0, 16),
-      sidZup: scannedData.slice(0, 16),
+      sidDVS: scannedData.slice(4, 20),
+      sidZup: scannedData.slice(4, 20),
       dmc: scannedData,
       gam: new Date().toISOString().split('T')[0],
       status: 'Delivered',
