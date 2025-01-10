@@ -9,6 +9,7 @@ import ExportButton from '@/components/ExportButton';
 import { codes, columns } from '@/data/data';
 import useWindowSize from '@/hooks/useWindowSize';
 import { exportToCSV } from '@/utils/cvs/functions';
+import { scan } from '@/utils/scan/functions';
 import { Code, StatusType } from '@/types/types';
 
 const LOCAL_STORAGE_KEY = 'sc-scan-data';
@@ -17,51 +18,52 @@ const Home: React.FC = () => {
   const { width } = useWindowSize();
   const isMobile = width <= 768;
 
-  const [data, setData] = useState<Code[]>([]);
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const [selectedRows, setSelectedRows] = useState<Code[]>([]);
-
-  // Load data from localStorage or initial data when component mounts (client-side only)
-  useEffect(() => {
+  const [data, setData] = useState<Code[]>(() => {
+    // Load data from localStorage when the component mounts
     const savedData = localStorage.getItem(LOCAL_STORAGE_KEY);
-    if (savedData) {
-      setData(JSON.parse(savedData));
-    } else {
-      setData(codes);
-    }
-  }, []);
+    return savedData ? JSON.parse(savedData) : codes;
+  });
 
-  // Save data to localStorage whenever it changes
+  const [selectedRows, setSelectedRows] = useState<Code[]>([]);
+  const [alertMessage, setAlertMessage] = useState<string | null>(null);
+
   useEffect(() => {
-    if (data.length > 0) {
+    // Save data to localStorage whenever it changes
+    if (typeof window !== 'undefined') {
       localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(data));
     }
   }, [data]);
 
   const handleDelete = () => {
-    setData(data.filter((row: Code) => !selectedRows.includes(row)));
+    setData(data.filter(row => !selectedRows.includes(row)));
     setSelectedRows([]);
   };
 
   const handleExport = async () => {
-    exportToCSV(data, setData);
-    localStorage.removeItem(LOCAL_STORAGE_KEY);
+    await exportToCSV(data, setData);
+    // Clear data from localStorage after exporting
+    if (typeof window !== 'undefined') {
+      localStorage.removeItem(LOCAL_STORAGE_KEY);
+    }
     setData([]);
   };
 
   const handleScan = useCallback((scannedData: string) => {
-    const newEntry: Code = {
-      id: (data.length + 1).toString(),
-      sidDVS: scannedData.slice(4, 20),
-      sidZup: scannedData.slice(4, 20),
-      dmc: scannedData,
-      gam: new Date().toISOString(),
-      status: "VALID" as StatusType,
-      erfasser: '4202',
-      zust: scannedData.slice(25, 28),
-    };
-    setData(prevData => [...prevData, newEntry]);
-  }, [data.length]);
+    const trimmedData = scannedData.trim();
+    const exists = data.some(item => item.dmc === trimmedData);
+
+    debugger
+    if (!exists) {
+      scan(trimmedData, data, setData);
+      setAlertMessage(null); // Clear any previous alert message
+    } else {
+      setAlertMessage('The scanned data already exists in the list.');
+      // Clear the alert message after 5 seconds
+      setTimeout(() => {
+        setAlertMessage(null);
+      }, 5000);
+    }
+  }, [data]);
 
   return (
     <div className="min-h-screen bg-[#f5f5f5]">
@@ -84,6 +86,11 @@ const Home: React.FC = () => {
       </header>
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {alertMessage && (
+          <div className="mb-4 p-4 text-sm text-red-700 bg-red-100 rounded-lg" role="alert">
+            {alertMessage}
+          </div>
+        )}
         <div className="bg-white rounded-lg shadow-sm p-6 mb-6">
           {isMobile ? <MobileBarcodeScanner onScan={handleScan} /> : <BarcodeScanner onScan={handleScan} />}
         </div>
