@@ -63,11 +63,15 @@ body {
 
 /* Custom button styles */
 .btn-primary {
-  @apply bg-[#ff6600] hover:bg-[#ff8533] text-white font-medium py-2 px-4 rounded transition-colors;
+  @apply font-medium py-2 px-4 rounded transition-colors;
 }
 
-.btn-secondary {
-  @apply bg-[#f5f5f5] hover:bg-gray-200 text-[#666666] font-medium py-2 px-4 rounded transition-colors;
+.btn-primary.primary {
+  @apply bg-[var(--dvs-orange)] hover:bg-[var(--dvs-orange-light)] text-white;
+}
+
+.btn-primary.secondary {
+  @apply bg-[var(--dvs-gray-light)] hover:bg-gray-200 text-[var(--dvs-gray)];
 }
 
 /* Table styles */

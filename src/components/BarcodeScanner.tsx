@@ -111,6 +111,8 @@ export default function BarcodeScanner({ onScan, error, checkDuplicate }: Barcod
             onScan={handleCameraScan} 
             error={error} 
             checkDuplicate={checkDuplicate}
+            isMobile={false}
+            isActive={showCamera}
           />
           <button
             onClick={handleCameraToggle}

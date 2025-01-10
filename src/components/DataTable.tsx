@@ -9,6 +9,7 @@ interface DataTableProps {
   data: Code[];
   selectedRows: Code[];
   setSelectedRows: (rows: Code[]) => void;
+  isMobile: boolean;
 }
 
 type SortConfig = {
@@ -23,6 +24,7 @@ const DataTable: React.FC<DataTableProps> = ({
   data,
   selectedRows,
   setSelectedRows,
+  isMobile,
 }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [sortConfig, setSortConfig] = useState<SortConfig>({ key: null, direction: 'asc' });
@@ -196,10 +198,10 @@ const DataTable: React.FC<DataTableProps> = ({
   return (
     <div className="space-y-4">
       {/* Search and Info Bar */}
-      <div className="flex justify-between items-center">
+      <div className={`flex ${isMobile ? 'flex-col gap-3' : 'justify-between items-center'}`}>
         <div className="relative">
           <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-            <svg className="h-5 w-5 text-[var(--dvs-gray)]" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+            <svg className="h-4 w-4 text-[var(--dvs-gray)]" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
               <path fillRule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clipRule="evenodd" />
             </svg>
           </div>
@@ -208,13 +210,13 @@ const DataTable: React.FC<DataTableProps> = ({
             value={searchQuery}
             onChange={(e) => {
               setSearchQuery(e.target.value);
-              setCurrentPage(1); // Reset to first page on search
+              setCurrentPage(1);
             }}
             placeholder="Suchen..."
-            className="pl-10 pr-4 py-2 border rounded-lg text-sm text-[var(--dvs-gray-dark)] focus:outline-none focus:ring-0 focus:border-[var(--dvs-orange)] w-64 font-geist-sans transition-colors"
+            className={`pl-10 pr-4 py-2 border rounded-lg text-sm text-[var(--dvs-gray-dark)] focus:outline-none focus:ring-0 focus:border-[var(--dvs-orange)] transition-colors ${isMobile ? 'w-full' : 'w-64'}`}
           />
         </div>
-        <div className="text-sm text-[var(--dvs-gray)] font-geist-sans">
+        <div className="text-sm text-[var(--dvs-gray)]">
           {filteredData.length} {filteredData.length === 1 ? 'Eintrag' : 'Einträge'} gefunden
           {selectedRows.length > 0 && (
             <span className="ml-2 text-[var(--dvs-orange)]">
@@ -229,7 +231,7 @@ const DataTable: React.FC<DataTableProps> = ({
         <table className="min-w-full divide-y divide-gray-200">
           <thead className="bg-[var(--dvs-gray-light)]">
             <tr>
-              <th className="px-4 py-3 w-10">
+              <th className={`${isMobile ? 'px-2 py-2' : 'px-4 py-3'} w-10`}>
                 <input
                   type="checkbox"
                   checked={selectedRows.length === data.length && data.length > 0}
@@ -241,23 +243,25 @@ const DataTable: React.FC<DataTableProps> = ({
                 <th
                   key={column.key.toString()}
                   onClick={() => handleSort(column.key)}
-                  className="px-4 py-3 text-left text-xs font-medium text-[var(--dvs-gray)] uppercase tracking-wider font-geist-sans cursor-pointer group hover:text-[var(--dvs-gray-dark)] select-none"
+                  className={`${isMobile ? 'px-2 py-2' : 'px-4 py-3'} text-left text-xs font-medium text-[var(--dvs-gray)] uppercase tracking-wider cursor-pointer group hover:text-[var(--dvs-gray-dark)] select-none ${
+                    isMobile && (column.key === 'dmc' || column.key === 'gam' || column.key === 'status') ? '' : isMobile ? 'hidden' : ''
+                  }`}
                 >
                   <div className="flex items-center gap-1">
                     {column.label}
                     <div className="flex flex-col text-[var(--dvs-orange)] opacity-0 group-hover:opacity-50">
                       {sortConfig.key === column.key ? (
                         sortConfig.direction === 'asc' ? (
-                          <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                          <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3" viewBox="0 0 20 20" fill="currentColor">
                             <path fillRule="evenodd" d="M14.707 10.293a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 111.414-1.414L10 13.586l3.293-3.293a1 1 0 011.414 0z" clipRule="evenodd" />
                           </svg>
                         ) : (
-                          <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                          <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3" viewBox="0 0 20 20" fill="currentColor">
                             <path fillRule="evenodd" d="M5.293 9.707a1 1 0 010-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 01-1.414 1.414L10 6.414l-3.293 3.293a1 1 0 01-1.414 0z" clipRule="evenodd" />
                           </svg>
                         )
                       ) : (
-                        <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3" viewBox="0 0 20 20" fill="currentColor">
                           <path fillRule="evenodd" d="M10 3a1 1 0 01.707.293l3 3a1 1 0 01-1.414 1.414L10 5.414 7.707 7.707a1 1 0 01-1.414-1.414l3-3A1 1 0 0110 3zm-3.707 9.293a1 1 0 011.414 0L10 14.586l2.293-2.293a1 1 0 011.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clipRule="evenodd" />
                         </svg>
                       )}
@@ -277,7 +281,7 @@ const DataTable: React.FC<DataTableProps> = ({
                     : 'hover:bg-[#fafafa]'
                 }`}
               >
-                <td className="px-4 py-3">
+                <td className={`${isMobile ? 'px-2 py-2' : 'px-4 py-3'}`}>
                   <input
                     type="checkbox"
                     checked={selectedRows.includes(row)}
@@ -288,7 +292,9 @@ const DataTable: React.FC<DataTableProps> = ({
                 {columns.map((column) => (
                   <td
                     key={`${row.id}-${column.key.toString()}`}
-                    className="px-4 py-3 text-sm text-[var(--dvs-gray-dark)] font-geist-sans whitespace-nowrap"
+                    className={`${isMobile ? 'px-2 py-2' : 'px-4 py-3'} text-sm text-[var(--dvs-gray-dark)] whitespace-nowrap ${
+                      isMobile && (column.key === 'dmc' || column.key === 'gam' || column.key === 'status') ? '' : isMobile ? 'hidden' : ''
+                    }`}
                   >
                     {column.key === 'status' ? (
                       <StatusTag status={row[column.key]} />
@@ -307,7 +313,7 @@ const DataTable: React.FC<DataTableProps> = ({
 
       {/* Pagination */}
       {totalPages > 1 && (
-        <div className="flex justify-center gap-2 items-center font-geist-sans">
+        <div className={`flex justify-center gap-2 items-center ${isMobile ? 'text-sm' : ''}`}>
           {renderPaginationButtons()}
         </div>
       )}
