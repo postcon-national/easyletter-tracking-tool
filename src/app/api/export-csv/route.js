@@ -34,7 +34,7 @@ export async function POST(req) {
       },
     });
   } catch (err) {
-    return NextResponse.json({ error: 'Failed to generate CSV' }, { status: 500 });
+    return NextResponse.json({ error: err }, { status: 500 });
   }
 }
 
