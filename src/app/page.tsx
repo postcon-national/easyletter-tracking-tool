@@ -28,6 +28,16 @@ const Home: React.FC = () => {
   const [selectedRows, setSelectedRows] = useState<any[]>([]);
 
   useEffect(() => {
+    // Load data from localStorage when the component mounts (client-side only)
+    if (typeof window !== 'undefined') {
+      const savedData = localStorage.getItem(LOCAL_STORAGE_KEY);
+      if (savedData) {
+        setData(JSON.parse(savedData));
+      }
+    }
+  }, []);
+
+  useEffect(() => {
     // Save data to localStorage whenever it changes
     localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(data));
   }, [data]);
