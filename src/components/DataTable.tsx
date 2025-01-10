@@ -10,6 +10,8 @@ interface DataTableProps {
   selectedRows: Code[];
   setSelectedRows: (rows: Code[]) => void;
   isMobile: boolean;
+  itemsPerPage?: number;
+  onItemsPerPageChange?: (value: number) => void;
 }
 
 type SortConfig = {
@@ -17,14 +19,14 @@ type SortConfig = {
   direction: 'asc' | 'desc';
 };
 
-const ITEMS_PER_PAGE = 10;
-
 const DataTable: React.FC<DataTableProps> = ({
   columns,
   data,
   selectedRows,
   setSelectedRows,
   isMobile,
+  itemsPerPage = 10,
+  onItemsPerPageChange,
 }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [sortConfig, setSortConfig] = useState<SortConfig>({ key: null, direction: 'asc' });
@@ -75,12 +77,20 @@ const DataTable: React.FC<DataTableProps> = ({
   );
 
   // Pagination
-  const totalPages = Math.ceil(filteredData.length / ITEMS_PER_PAGE);
-  const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
-  const paginatedData = filteredData.slice(startIndex, startIndex + ITEMS_PER_PAGE);
+  const totalPages = Math.ceil(filteredData.length / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const paginatedData = filteredData.slice(startIndex, startIndex + itemsPerPage);
 
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
+  };
+
+  const handleItemsPerPageChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const newValue = parseInt(e.target.value, 10);
+    setCurrentPage(1); // Reset to first page when changing items per page
+    if (onItemsPerPageChange) {
+      onItemsPerPageChange(newValue);
+    }
   };
 
   const renderPaginationButtons = () => {
@@ -216,13 +226,32 @@ const DataTable: React.FC<DataTableProps> = ({
             className={`pl-10 pr-4 py-2 border rounded-lg text-sm text-[var(--dvs-gray-dark)] focus:outline-none focus:ring-0 focus:border-[var(--dvs-orange)] transition-colors ${isMobile ? 'w-full' : 'w-64'}`}
           />
         </div>
-        <div className="text-sm text-[var(--dvs-gray)]">
-          {filteredData.length} {filteredData.length === 1 ? 'Eintrag' : 'Einträge'} gefunden
-          {selectedRows.length > 0 && (
-            <span className="ml-2 text-[var(--dvs-orange)]">
-              • {selectedRows.length} {selectedRows.length === 1 ? 'Eintrag' : 'Einträge'} ausgewählt
-            </span>
-          )}
+        <div className="flex items-center gap-4">
+          <div className="flex items-center gap-2">
+            <label htmlFor="itemsPerPage" className="text-sm text-[var(--dvs-gray)]">
+              Einträge pro Seite:
+            </label>
+            <select
+              id="itemsPerPage"
+              value={itemsPerPage}
+              onChange={handleItemsPerPageChange}
+              className="text-sm border rounded-lg py-1 px-2 text-[var(--dvs-gray-dark)] focus:outline-none focus:ring-0 focus:border-[var(--dvs-orange)] transition-colors"
+            >
+              <option value="5">5</option>
+              <option value="10">10</option>
+              <option value="25">25</option>
+              <option value="50">50</option>
+              <option value="100">100</option>
+            </select>
+          </div>
+          <div className="text-sm text-[var(--dvs-gray)]">
+            {filteredData.length} {filteredData.length === 1 ? 'Eintrag' : 'Einträge'} gefunden
+            {selectedRows.length > 0 && (
+              <span className="ml-2 text-[var(--dvs-orange)]">
+                • {selectedRows.length} {selectedRows.length === 1 ? 'Eintrag' : 'Einträge'} ausgewählt
+              </span>
+            )}
+          </div>
         </div>
       </div>
 

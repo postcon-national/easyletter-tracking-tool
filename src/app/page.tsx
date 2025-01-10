@@ -14,17 +14,32 @@ import { Code } from '@/types/types';
 import Image from 'next/image';
 
 const LOCAL_STORAGE_KEY = 'sc-scan-data';
+const ITEMS_PER_PAGE_KEY = 'sc-scan-items-per-page';
 
 const Home: React.FC = () => {
   const { width } = useWindowSize();
   const [isLoading, setIsLoading] = useState(true);
   const [isMobile, setIsMobile] = useState(false);
   const [activeTab, setActiveTab] = useState<'scan' | 'table'>('scan');
+  const [itemsPerPage, setItemsPerPage] = useState<number>(() => {
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem(ITEMS_PER_PAGE_KEY);
+      return saved ? parseInt(saved, 10) : (width <= 768 ? 5 : 10);
+    }
+    return 10;
+  });
 
   useEffect(() => {
     setIsMobile(width <= 768);
     setIsLoading(false);
   }, [width]);
+
+  const handleItemsPerPageChange = (value: number) => {
+    setItemsPerPage(value);
+    if (typeof window !== 'undefined') {
+      localStorage.setItem(ITEMS_PER_PAGE_KEY, value.toString());
+    }
+  };
 
   const [data, setData] = useState<Code[]>(codes);
   const [selectedRows, setSelectedRows] = useState<Code[]>([]);
@@ -159,6 +174,8 @@ const Home: React.FC = () => {
                   selectedRows={selectedRows}
                   setSelectedRows={setSelectedRows}
                   isMobile={isMobile}
+                  itemsPerPage={itemsPerPage}
+                  onItemsPerPageChange={handleItemsPerPageChange}
                 />
                 <div className="flex justify-end mt-4 space-x-2">
                   <DeleteButton onDelete={handleDelete} disabled={selectedRows.length === 0} /> 
@@ -180,6 +197,8 @@ const Home: React.FC = () => {
                 selectedRows={selectedRows}
                 setSelectedRows={setSelectedRows}
                 isMobile={isMobile}
+                itemsPerPage={itemsPerPage}
+                onItemsPerPageChange={handleItemsPerPageChange}
               />
               
               <div className="flex justify-end mt-6 space-x-4">
