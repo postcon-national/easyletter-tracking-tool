@@ -40,11 +40,11 @@ export const columns: Array<Column<Code>> = [
 // };
 
 // Function to generate a random sendungsId (16 digits)
-// const generateSendungsId = () => {
-//   return Array.from({ length: 16 }, () => Math.floor(Math.random() * 10)).join(
-//     ""
-//   );
-// };
+const generateSendungsId = () => {
+  return Array.from({ length: 16 }, () => Math.floor(Math.random() * 10)).join(
+    ""
+  );
+};
 
 // Function to generate test data
 // const generateTestData = (count: number): Code[] => {
