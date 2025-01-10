@@ -25,14 +25,7 @@ const Home: React.FC = () => {
     setIsLoading(false);
   }, [width]);
 
-  const [data, setData] = useState<Code[]>(() => {
-    if (typeof window !== 'undefined') {
-      const savedData = localStorage.getItem(LOCAL_STORAGE_KEY);
-      return savedData ? JSON.parse(savedData) : codes;
-    }
-    return codes;
-  });
-
+  const [data, setData] = useState<Code[]>(codes);
   const [selectedRows, setSelectedRows] = useState<Code[]>([]);
   const [alertMessage, setAlertMessage] = useState<string | null>(null);
   const [isDataLoaded, setIsDataLoaded] = useState(false);
@@ -41,7 +34,11 @@ const Home: React.FC = () => {
     if (typeof window !== 'undefined') {
       const savedData = localStorage.getItem(LOCAL_STORAGE_KEY);
       if (savedData) {
-        setData(JSON.parse(savedData));
+        const parsedData = JSON.parse(savedData);
+        // Only use saved data if it's not empty
+        if (parsedData && parsedData.length > 0) {
+          setData(parsedData);
+        }
       }
       setIsDataLoaded(true);
     }
