@@ -19,23 +19,28 @@ const Home: React.FC = () => {
   const { width } = useWindowSize();
   const isMobile = width <= 768;
 
-  const [data, setData] = useState<Code[]>(() => {
-    // Load data from localStorage when the component mounts
-    if (typeof window !== 'undefined') {
-      const savedData = localStorage.getItem(LOCAL_STORAGE_KEY);
-      return savedData ? JSON.parse(savedData) : codes;
-    }
-  });
-
+  const [data, setData] = useState<Code[]>(codes);
   const [selectedRows, setSelectedRows] = useState<Code[]>([]);
   const [alertMessage, setAlertMessage] = useState<string | null>(null);
+  const [isDataLoaded, setIsDataLoaded] = useState(false);
 
   useEffect(() => {
-    // Save data to localStorage whenever it changes
+    // Load data from localStorage when the component mounts (client-side only)
     if (typeof window !== 'undefined') {
+      const savedData = localStorage.getItem(LOCAL_STORAGE_KEY);
+      if (savedData) {
+        setData(JSON.parse(savedData));
+      }
+      setIsDataLoaded(true);
+    }
+  }, []);
+
+  useEffect(() => {
+    // Save data to localStorage whenever it changes (client-side only)
+    if (typeof window !== 'undefined' && isDataLoaded) {
       localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(data));
     }
-  }, [data]);
+  }, [data, isDataLoaded]);
 
   const handleDelete = () => {
     setData(data.filter(row => !selectedRows.includes(row)));
@@ -95,25 +100,25 @@ const Home: React.FC = () => {
           </div>
         )}
         <div className="bg-white rounded-lg shadow-sm p-6 mb-6">
-          {isMobile ? <MobileBarcodeScanner onScan={handleScan} /> : <BarcodeScanner onScan={handleScan} />}
-        </div>
-        
-        <div className="bg-white rounded-lg shadow-sm p-6">
-          <DataTable
-            columns={columns}
-            data={data}
-            selectedRows={selectedRows}
-            setSelectedRows={setSelectedRows}
-          />
-          
-          {selectedRows && data && (
+
+        {isMobile ? (
+          <MobileBarcodeScanner onScan={handleScan} />
+        ) : (
+          <BarcodeScanner onScan={handleScan} />
+        )}
+        <DataTable
+          columns={columns}
+          data={data}
+          selectedRows={selectedRows}
+          setSelectedRows={setSelectedRows}
+        />
+        {selectedRows && data && (
              <div className="flex justify-end mt-6 space-x-4">
              <DeleteButton onDelete={handleDelete} disabled={selectedRows?.length === 0} /> 
              <ExportButton onExport={handleExport} disabled={data?.length === 0} />
            </div>
           )}
-         
-        </div>
+          </div>
       </main>
     </div>
   );

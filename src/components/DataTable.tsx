@@ -114,7 +114,7 @@ export default function DataTable<T extends { id: string }>(props: TableProps<T>
             value={globalFilter ?? ''}
             onChange={e => setGlobalFilter(e.target.value)}
             placeholder="Suchen..."
-            className="p-2 pl-10 border rounded w-64 focus:outline-none focus:ring-2 focus:ring-[#ff6600]/20 focus:border-[#ff6600]"
+            className="p-2 pl-10 border rounded w-64 focus:outline-none focus:ring-2 focus:ring-[#ff6600]/20 focus:border-[#ff6600] mt-4"
           />
         </div>
         <div className="text-sm text-gray-500">
