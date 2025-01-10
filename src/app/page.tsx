@@ -46,11 +46,9 @@ const Home: React.FC = () => {
     <div className="container mx-auto p-4 space-y-4">
       <header className="flex items-center justify-between py-4">
         <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSs5fSe7cesYu_vRdemQYmiXaa5mXb3dtHyPg&s" alt="Logo" className="h-12" />
-        <h1 className="text-2xl font-bold text-orange-500">Scanner Application</h1>
+        <h1 className="text-xl font-bold text-orange-500">Scanner Application</h1>
       </header>
       {isMobile ? <MobileBarcodeScanner onScan={handleScan} /> : <BarcodeScanner onScan={handleScan} />}
-      {/* <BarcodeScanner onScan={handleScan} />
-      <MobileBarcodeScanner onScan={handleScan} /> */}
       <DataTable
         columns={columns}
         data={data}
