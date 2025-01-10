@@ -50,18 +50,11 @@ export const exportToCSV = async (
     await writable.write(csvText);
     await writable.close();
 
-    // If you want to clear data now, you can do it safely:
     localStorage.removeItem('sc-scan-data');
     setData([]);
 
-  } catch (err: any) {
-    // If the user CANCELS the save dialog, it throws an AbortError
-    if (err.name === 'AbortError') {
-      console.log('User CANCELED the save dialog. Data was NOT cleared.');
-      // Do NOT clear data, or handle as you like.
-    } else {
-      console.error('An error occurred while saving:', err);
-    }
+  } catch (error) {
+    console.error('Export failed:', error);
   }
 };
 

@@ -15,6 +15,5 @@ export interface Code {
 export interface Column<T> {
   key: keyof T;
   label: string;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   format?: (value: T[keyof T]) => string;
 }

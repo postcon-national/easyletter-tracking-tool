@@ -10,7 +10,7 @@ import { codes, columns } from '@/data/data';
 import useWindowSize from '@/hooks/useWindowSize';
 import { exportToCSV } from '@/utils/cvs/functions';
 import { scan } from '@/utils/scan/functions';
-import { Code, StatusType } from '@/types/types';
+import { Code } from '@/types/types';
 
 const LOCAL_STORAGE_KEY = 'sc-scan-data';
 
