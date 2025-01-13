@@ -11,7 +11,6 @@ export interface Code {
   zust: string;
 }
 
-
 export interface Column<T> {
   key: keyof T;
   label: string;

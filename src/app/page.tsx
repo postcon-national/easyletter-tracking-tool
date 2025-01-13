@@ -13,8 +13,8 @@ import { scan } from '@/utils/scan/functions';
 import { Code } from '@/types/types';
 import Image from 'next/image';
 
-const LOCAL_STORAGE_KEY = 'sc-scan-data';
-const ITEMS_PER_PAGE_KEY = 'sc-scan-items-per-page';
+const LOCAL_STORAGE_KEY = 'easyletter-tracking-tool-data';
+const ITEMS_PER_PAGE_KEY = 'easyletter-tracking-tool-items-per-page';
 
 const Home: React.FC = () => {
   const { width } = useWindowSize();
@@ -112,10 +112,7 @@ const Home: React.FC = () => {
         <div className={`mx-auto ${isMobile ? 'px-4 py-3' : 'max-w-7xl px-6 py-5'}`}>
           <div className="flex items-center justify-between">
             <div>
-              <h1 className={`font-medium text-[var(--dvs-gray-dark)] ${isMobile ? 'text-lg' : 'text-xl'}`}>SC-Scan</h1>
-              <p className={`text-[var(--dvs-gray)] ${isMobile ? 'text-xs mt-0.5' : 'text-sm mt-1'}`}>
-                Sortierzentrum Eingangsscan
-              </p>
+              <h1 className={`font-medium text-[var(--dvs-gray-dark)] ${isMobile ? 'text-lg' : 'text-xl'}`}>Easyletter Tracking Tool</h1>
             </div>
             <Image 
               src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSs5fSe7cesYu_vRdemQYmiXaa5mXb3dtHyPg&s"
