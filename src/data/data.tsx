@@ -38,5 +38,5 @@ export const columns: Column<Code>[] = [
     ),
   },
   { key: "status", label: "Status" },
-  { key: "zust", label: "ZUP" },
+  { key: "zust", label: "ZUP + ABL" },
 ]; 
