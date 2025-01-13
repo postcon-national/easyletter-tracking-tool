@@ -1,5 +1,8 @@
 import { Code } from "@/types/types";
-import moment from "moment";
+
+const formatDateTime = (date: Date): string => {
+  return date.toISOString().slice(0, 19).replace("T", " ");
+};
 
 export const scan = (
   scannedData: string,
@@ -12,7 +15,7 @@ export const scan = (
     sidDVS: scannedData.slice(4, 20),
     sidZup: scannedData.slice(4, 20),
     dmc: scannedData,
-    gam: moment(new Date().toISOString()).format("YYYY-MM-DD HH:mm:ss"),
+    gam: formatDateTime(new Date()),
     status: "VALID",
     erfasser: "4202",
     zust: zustellpartnerId,

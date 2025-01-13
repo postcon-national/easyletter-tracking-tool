@@ -67,5 +67,4 @@ const generateTestData = (count: number): Code[] => {
 };
 
 // Generate 5000 test entries
-// export const codes: Code[] = generateTestData(5000);
-export const codes: Code[] = [];
+export const codes: Code[] = generateTestData(5000);

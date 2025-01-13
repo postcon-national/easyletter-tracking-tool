@@ -2,12 +2,24 @@
 @tailwind components;
 @tailwind utilities;
 
-@keyframes scan {
+@keyframes scan-mobile {
   0% {
     transform: translateY(0);
   }
   50% {
-    transform: translateY(256px);
+    transform: translateY(222px); /* Reduced by 2px to account for line height */
+  }
+  100% {
+    transform: translateY(0);
+  }
+}
+
+@keyframes scan-desktop {
+  0% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(190px); /* Reduced by 2px to account for line height */
   }
   100% {
     transform: translateY(0);
@@ -15,7 +27,14 @@
 }
 
 .animate-scan {
-  animation: scan 2s linear infinite;
+  animation: scan-mobile 2s ease-in-out infinite;
+  will-change: transform;
+}
+
+@media (min-width: 768px) {
+  .animate-scan {
+    animation: scan-desktop 2s ease-in-out infinite;
+  }
 }
 
 @keyframes fade-in {
