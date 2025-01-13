@@ -117,43 +117,43 @@ const Home: React.FC = () => {
       }} />
       <div className="relative">
         <header className="bg-white/80 backdrop-blur-sm shadow-sm sticky top-0 z-10 border-b border-gray-200/50">
-          <div className={`mx-auto ${isMobile ? 'px-4 py-3' : 'max-w-7xl px-6 py-4'}`}>
+          <div className={`mx-auto ${isMobile ? 'px-4 py-2' : 'max-w-7xl px-6 py-4'}`}>
             <div className="flex items-center justify-between">
-              <div className="flex items-center gap-4">
+              <div className="flex items-center gap-3">
                 <div className="relative group">
-                  <div className="absolute -inset-2 bg-[var(--dvs-orange)]/10 rounded-xl opacity-0 group-hover:opacity-100 transition-all duration-300" />
+                  <div className={`absolute -inset-2 bg-[var(--dvs-orange)]/10 rounded-xl opacity-0 group-hover:opacity-100 transition-all duration-300 ${isMobile ? 'hidden' : ''}`} />
                   <Image 
                     src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSs5fSe7cesYu_vRdemQYmiXaa5mXb3dtHyPg&s"
                     alt="DVS Logo" 
                     className="relative object-contain transition-transform group-hover:scale-105 duration-300"
-                    width={isMobile ? 40 : 44}
-                    height={isMobile ? 40 : 44}
+                    width={isMobile ? 32 : 44}
+                    height={isMobile ? 32 : 44}
                     priority
                   />
                 </div>
-                <div className="h-8 w-px bg-gradient-to-b from-gray-200/40 via-gray-200 to-gray-200/40" />
-                <h1 className={`font-semibold text-[var(--dvs-gray-dark)] ${isMobile ? 'text-lg' : 'text-xl'} tracking-tight`}>
-                  Easyletter Tracking Tool
+                {!isMobile && <div className="h-8 w-px bg-gradient-to-b from-gray-200/40 via-gray-200 to-gray-200/40" />}
+                <h1 className={`font-semibold text-[var(--dvs-gray-dark)] ${isMobile ? 'text-base' : 'text-xl'} tracking-tight`}>
+                  {isMobile ? 'Tracking Tool' : 'Easyletter Tracking Tool'}
                 </h1>
               </div>
               
-              <div className="flex items-center gap-3 bg-gradient-to-r from-[var(--dvs-orange)]/5 to-transparent px-4 py-2.5 rounded-lg border border-[var(--dvs-orange)]/10 hover:from-[var(--dvs-orange)]/10 hover:to-[var(--dvs-orange)]/5 transition-all duration-300">
+              <div className={`flex items-center gap-2 ${isMobile ? 'px-2 py-1.5' : 'px-4 py-2.5'} rounded-lg border border-[var(--dvs-orange)]/10 bg-gradient-to-r from-[var(--dvs-orange)]/5 to-transparent hover:from-[var(--dvs-orange)]/10 hover:to-[var(--dvs-orange)]/5 transition-all duration-300`}>
                 <div className="relative">
                   <div className="absolute inset-0 rounded-full bg-[var(--dvs-orange)]/5 animate-ping" style={{ animationDuration: '3s' }} />
                   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" 
-                       className="w-6 h-6 text-[var(--dvs-orange)] opacity-90 relative">
+                       className={`${isMobile ? 'w-5 h-5' : 'w-6 h-6'} text-[var(--dvs-orange)] opacity-90 relative`}>
                     <path fillRule="evenodd" d="M7.5 6a4.5 4.5 0 1 1 9 0 4.5 4.5 0 0 1-9 0ZM3.751 20.105a8.25 8.25 0 0 1 16.498 0 .75.75 0 0 1-.437.695A18.683 18.683 0 0 1 12 22.5c-2.786 0-5.433-.608-7.812-1.7a.75.75 0 0 1-.437-.695Z" clipRule="evenodd" />
                   </svg>
                 </div>
                 <div className="flex flex-col">
-                  <div className="flex items-center gap-2">
-                    <span className="text-sm font-medium text-[var(--dvs-gray)]">Station</span>
+                  <div className="flex items-center gap-1.5">
+                    {!isMobile && <span className="text-sm font-medium text-[var(--dvs-gray)]">Station</span>}
                     <span className="font-semibold text-[var(--dvs-orange)]">4202</span>
-                    <span className="inline-flex items-center rounded-full bg-gradient-to-r from-green-50 to-green-50/50 px-1.5 py-0.5 text-xs font-medium text-green-700 ring-1 ring-inset ring-green-600/20">
+                    <span className={`inline-flex items-center rounded-full bg-gradient-to-r from-green-50 to-green-50/50 ${isMobile ? 'px-1 py-0.5 text-[10px]' : 'px-1.5 py-0.5 text-xs'} font-medium text-green-700 ring-1 ring-inset ring-green-600/20`}>
                       Aktiv
                     </span>
                   </div>
-                  <span className="text-xs text-[var(--dvs-gray)]">Deutscher Versand Service</span>
+                  {!isMobile && <span className="text-xs text-[var(--dvs-gray)]">Deutscher Versand Service</span>}
                 </div>
               </div>
             </div>
@@ -166,32 +166,35 @@ const Home: React.FC = () => {
               <nav className="flex bg-white rounded-xl shadow-sm mb-2 p-1">
                 <button
                   onClick={() => setActiveTab('scan')}
-                  className={`flex-1 flex items-center justify-center gap-1.5 py-2.5 text-sm font-medium transition-all duration-300 rounded-lg ${
-                    activeTab === 'scan'
-                      ? 'text-[var(--dvs-orange)] bg-gradient-to-r from-[var(--dvs-orange)]/10 to-[var(--dvs-orange)]/5'
-                      : 'text-[var(--dvs-gray)] hover:text-[var(--dvs-gray-dark)] hover:bg-gray-50'
-                  }`}
+                  className={`flex-1 flex items-center justify-center gap-2 py-3 text-sm font-medium transition-all duration-300 rounded-lg
+                    outline-none focus:outline-none focus-visible:outline-none ring-offset-white focus-visible:ring-2 focus-visible:ring-[var(--dvs-orange)]/20 focus-visible:ring-offset-1 [--tw-ring-color:transparent]
+                    ${activeTab === 'scan'
+                      ? 'text-[var(--dvs-orange)] bg-gradient-to-br from-[var(--dvs-orange)]/10 via-[var(--dvs-orange)]/5 to-transparent shadow-[inset_0_1px_0_0_rgba(255,255,255,0.1)] border border-[var(--dvs-orange)]/10'
+                      : 'text-[var(--dvs-gray)] hover:text-[var(--dvs-gray-dark)] hover:bg-gradient-to-br hover:from-gray-50 hover:to-transparent border border-transparent hover:border-gray-100'
+                    }`}
                 >
                   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" 
-                       className={`w-4 h-4 transition-transform duration-300 ${activeTab === 'scan' ? 'scale-110' : ''}`}>
+                       className={`w-4 h-4 transition-all duration-300 ${activeTab === 'scan' ? 'scale-110 opacity-90' : 'opacity-70'}`}>
                     <path d="M6 3a3 3 0 0 0-3 3v12a3 3 0 0 0 3 3h12a3 3 0 0 0 3-3V6a3 3 0 0 0-3-3H6zm1.5 1.5h9a1.5 1.5 0 0 1 1.5 1.5v9a1.5 1.5 0 0 1-1.5 1.5h-9A1.5 1.5 0 0 1 6 15V6a1.5 1.5 0 0 1 1.5-1.5zm0 3V12h9V7.5h-9zm0 6V18h9v-4.5h-9z" />
                   </svg>
                   Scanner
                 </button>
                 <button
                   onClick={() => setActiveTab('table')}
-                  className={`flex-1 flex items-center justify-center gap-1.5 py-2.5 text-sm font-medium transition-all duration-300 rounded-lg ${
-                    activeTab === 'table'
-                      ? 'text-[var(--dvs-orange)] bg-gradient-to-r from-[var(--dvs-orange)]/10 to-[var(--dvs-orange)]/5'
-                      : 'text-[var(--dvs-gray)] hover:text-[var(--dvs-gray-dark)] hover:bg-gray-50'
-                  }`}
+                  className={`flex-1 flex items-center justify-center gap-2 py-3 text-sm font-medium transition-all duration-300 rounded-lg
+                    outline-none focus:outline-none focus-visible:outline-none ring-offset-white focus-visible:ring-2 focus-visible:ring-[var(--dvs-orange)]/20 focus-visible:ring-offset-1 [--tw-ring-color:transparent]
+                    ${activeTab === 'table'
+                      ? 'text-[var(--dvs-orange)] bg-gradient-to-br from-[var(--dvs-orange)]/10 via-[var(--dvs-orange)]/5 to-transparent shadow-[inset_0_1px_0_0_rgba(255,255,255,0.1)] border border-[var(--dvs-orange)]/10'
+                      : 'text-[var(--dvs-gray)] hover:text-[var(--dvs-gray-dark)] hover:bg-gradient-to-br hover:from-gray-50 hover:to-transparent border border-transparent hover:border-gray-100'
+                    }`}
                 >
                   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" 
-                       className={`w-4 h-4 transition-transform duration-300 ${activeTab === 'table' ? 'scale-110' : ''}`}>
+                       className={`w-4 h-4 transition-all duration-300 ${activeTab === 'table' ? 'scale-110 opacity-90' : 'opacity-70'}`}>
                     <path d="M5.25 3A2.25 2.25 0 0 0 3 5.25v13.5A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V5.25A2.25 2.25 0 0 0 18.75 3H5.25zM6.75 7.5a.75.75 0 0 1 .75-.75h9a.75.75 0 0 1 0 1.5h-9a.75.75 0 0 1-.75-.75zm0 4.5a.75.75 0 0 1 .75-.75h9a.75.75 0 0 1 0 1.5h-9a.75.75 0 0 1-.75-.75zm0 4.5a.75.75 0 0 1 .75-.75h9a.75.75 0 0 1 0 1.5h-9a.75.75 0 0 1-.75-.75z" />
                   </svg>
-                  Übersicht {data.length > 0 && (
-                    <span className="ml-1 px-1.5 py-0.5 rounded-full bg-[var(--dvs-orange)]/10 text-[var(--dvs-orange)] text-xs font-medium">
+                  <span className="relative">Übersicht</span>
+                  {data.length > 0 && (
+                    <span className="relative ml-1 px-2 py-0.5 rounded-full bg-gradient-to-r from-[var(--dvs-orange)]/10 to-[var(--dvs-orange)]/5 text-[var(--dvs-orange)] text-xs font-medium ring-1 ring-inset ring-[var(--dvs-orange)]/10 [--tw-ring-color:transparent]">
                       {data.length}
                     </span>
                   )}
@@ -221,8 +224,8 @@ const Home: React.FC = () => {
                       onItemsPerPageChange={handleItemsPerPageChange}
                     />
                     <div className="flex justify-end mt-3 space-x-2">
-                      <DeleteButton onDelete={handleDelete} disabled={selectedRows.length === 0} /> 
-                      <ExportButton onExport={handleExport} disabled={data.length === 0} />
+                      <DeleteButton onDelete={handleDelete} disabled={selectedRows.length === 0} isMobile={true} /> 
+                      <ExportButton onExport={handleExport} disabled={data.length === 0} isMobile={true} />
                     </div>
                   </div>
                 )}
@@ -249,8 +252,8 @@ const Home: React.FC = () => {
                 />
                 
                 <div className="flex justify-end mt-5 space-x-3">
-                  <DeleteButton onDelete={handleDelete} disabled={selectedRows.length === 0} /> 
-                  <ExportButton onExport={handleExport} disabled={data.length === 0} />
+                  <DeleteButton onDelete={handleDelete} disabled={selectedRows.length === 0} isMobile={false} /> 
+                  <ExportButton onExport={handleExport} disabled={data.length === 0} isMobile={false} />
                 </div>
               </div>
             </>

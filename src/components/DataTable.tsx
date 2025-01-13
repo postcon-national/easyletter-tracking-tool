@@ -211,27 +211,42 @@ const DataTable: React.FC<DataTableProps> = ({
         </div>
         <div className="flex items-center gap-4">
           <div className="flex items-center gap-2">
-            <label htmlFor="itemsPerPage" className="text-sm text-[var(--dvs-gray)]">
-              Einträge pro Seite:
-            </label>
-            <select
-              id="itemsPerPage"
-              value={itemsPerPage}
-              onChange={handleItemsPerPageChange}
-              className="text-sm border rounded-lg py-1 px-2 text-[var(--dvs-gray-dark)] focus:outline-none focus:ring-0 focus:border-[var(--dvs-orange)] transition-colors"
-            >
-              <option value="5">5</option>
-              <option value="10">10</option>
-              <option value="25">25</option>
-              <option value="50">50</option>
-              <option value="100">100</option>
-            </select>
+            <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-gradient-to-r from-gray-50 to-gray-50/50 text-[var(--dvs-gray)] text-xs font-medium ring-1 ring-inset ring-gray-200/20 relative">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-3.5 h-3.5 opacity-80">
+                <path fillRule="evenodd" d="M2 3.75A.75.75 0 012.75 3h14.5a.75.75 0 010 1.5H2.75A.75.75 0 012 3.75zm0 4.167a.75.75 0 01.75-.75h14.5a.75.75 0 010 1.5H2.75a.75.75 0 01-.75-.75zm0 4.166a.75.75 0 01.75-.75h14.5a.75.75 0 010 1.5H2.75a.75.75 0 01-.75-.75zm0 4.167a.75.75 0 01.75-.75h14.5a.75.75 0 010 1.5H2.75a.75.75 0 01-.75-.75z" clipRule="evenodd" />
+              </svg>
+              <select
+                id="itemsPerPage"
+                value={itemsPerPage}
+                onChange={handleItemsPerPageChange}
+                className="bg-transparent border-0 outline-none focus:ring-0 p-0 text-[var(--dvs-gray)] text-xs font-medium appearance-none cursor-pointer pr-4 [&>option]:bg-white [&>option]:text-[var(--dvs-gray-dark)] [&>option]:py-1"
+                style={{ WebkitAppearance: 'none', MozAppearance: 'none' }}
+              >
+                <option value="5">5 Einträge</option>
+                <option value="10">10 Einträge</option>
+                <option value="25">25 Einträge</option>
+                <option value="50">50 Einträge</option>
+                <option value="100">100 Einträge</option>
+              </select>
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-3.5 h-3.5 opacity-80 absolute right-0 pointer-events-none">
+                <path fillRule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clipRule="evenodd" />
+              </svg>
+            </span>
           </div>
-          <div className="text-sm text-[var(--dvs-gray)]">
-            {filteredData.length} {filteredData.length === 1 ? 'Eintrag' : 'Einträge'} gefunden
+          <div className="flex items-center gap-2">
+            <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-gradient-to-r from-gray-50 to-gray-50/50 text-[var(--dvs-gray)] text-xs font-medium ring-1 ring-inset ring-gray-200/20">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-3.5 h-3.5 opacity-80">
+                <path d="M7 3.5A1.5 1.5 0 018.5 2h3.879a1.5 1.5 0 011.06.44l3.122 3.12A1.5 1.5 0 0117 6.622V12.5a1.5 1.5 0 01-1.5 1.5h-1v-3.379a3 3 0 00-.879-2.121L10.5 5.379A3 3 0 008.379 4.5H7v-1z" />
+                <path d="M4.5 6A1.5 1.5 0 003 7.5v9A1.5 1.5 0 004.5 18h7a1.5 1.5 0 001.5-1.5v-5.879a1.5 1.5 0 00-.44-1.06L9.44 6.439A1.5 1.5 0 008.378 6H4.5z" />
+              </svg>
+              {filteredData.length} {filteredData.length === 1 ? 'Eintrag' : 'Einträge'}
+            </span>
             {selectedRows.length > 0 && (
-              <span className="ml-2 text-[var(--dvs-orange)]">
-                • {selectedRows.length} {selectedRows.length === 1 ? 'Eintrag' : 'Einträge'} ausgewählt
+              <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-gradient-to-r from-[var(--dvs-orange)]/10 to-[var(--dvs-orange)]/5 text-[var(--dvs-orange)] text-xs font-medium ring-1 ring-inset ring-[var(--dvs-orange)]/10">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-3.5 h-3.5 opacity-80">
+                  <path d="M10 1a6 6 0 00-3.815 10.631C7.237 12.5 8.51 13 10 13s2.763-.5 3.815-1.369A6 6 0 0010 1zM5.177 16.438C3.836 16.802 2.761 17.346 2 18c1.5 1.5 4 2 8 2s6.5-.5 8-2c-.761-.654-1.836-1.198-3.177-1.562C13.466 17.36 11.818 18 10 18s-3.466-.64-4.823-1.562z" />
+                </svg>
+                {selectedRows.length} {selectedRows.length === 1 ? 'Eintrag' : 'Einträge'} ausgewählt
               </span>
             )}
           </div>

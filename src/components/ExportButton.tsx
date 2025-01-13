@@ -2,34 +2,35 @@ import React from 'react';
 
 interface ExportButtonProps {
   onExport: () => void;
-  disabled?: boolean;
-  isMobile?: boolean;
+  disabled: boolean;
+  className?: string;
+  isMobile: boolean;
 }
 
-const ExportButton: React.FC<ExportButtonProps> = ({ onExport, disabled = false, isMobile = false }) => {
+const ExportButton: React.FC<ExportButtonProps> = ({ onExport, disabled, className, isMobile }) => {
   return (
     <button
       onClick={onExport}
       disabled={disabled}
-      className={`
-        inline-flex items-center justify-center gap-1.5 
-        ${isMobile ? 'px-3 py-1.5 text-sm' : 'px-4 py-2.5'} 
-        font-medium rounded-xl transition-all duration-200
+      title="Als CSV exportieren"
+      className={className || `
+        inline-flex items-center justify-center ${isMobile ? 'w-10 h-10' : 'gap-1.5 px-3 py-1.5'} rounded-lg text-sm
+        transition-all duration-300
+        outline-none focus:outline-none focus-visible:outline-none
+        ring-offset-white focus-visible:ring-2 focus-visible:ring-[var(--dvs-orange)]/20 focus-visible:ring-offset-1
+        [--tw-ring-color:transparent]
         ${disabled 
-          ? 'bg-gray-100 text-gray-400 cursor-not-allowed' 
-          : 'bg-[var(--dvs-orange)] text-white hover:bg-[var(--dvs-orange)]/90 active:bg-[var(--dvs-orange)]/95'
+          ? 'bg-gray-100/50 text-gray-400 cursor-not-allowed focus-visible:ring-0'
+          : 'text-[var(--dvs-orange)] bg-white/60 hover:bg-white/80 active:bg-white/90 backdrop-blur-sm border border-[var(--dvs-orange)]/10 shadow-sm hover:shadow-md active:shadow-sm'
         }
       `}
     >
-      <svg 
-        xmlns="http://www.w3.org/2000/svg" 
-        viewBox="0 0 24 24" 
-        fill="currentColor" 
-        className={`${isMobile ? 'w-4 h-4' : 'w-5 h-5'}`}
-      >
-        <path d="M12 2.25a.75.75 0 0 1 .75.75v11.69l3.22-3.22a.75.75 0 1 1 1.06 1.06l-4.5 4.5a.75.75 0 0 1-1.06 0l-4.5-4.5a.75.75 0 1 1 1.06-1.06l3.22 3.22V3a.75.75 0 0 1 .75-.75Zm-9 13.5a.75.75 0 0 1 .75.75v2.25a1.5 1.5 0 0 0 1.5 1.5h13.5a1.5 1.5 0 0 0 1.5-1.5V16.5a.75.75 0 0 1 1.5 0v2.25a3 3 0 0 1-3 3H5.25a3 3 0 0 1-3-3V16.5a.75.75 0 0 1 .75-.75Z" />
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" 
+           className={`${isMobile ? 'w-5 h-5' : 'w-4 h-4'} transition-opacity duration-200 ${disabled ? 'opacity-40' : 'opacity-80'}`}>
+        <path d="M10.75 2.75a.75.75 0 00-1.5 0v8.614L6.295 8.235a.75.75 0 10-1.09 1.03l4.25 4.5a.75.75 0 001.09 0l4.25-4.5a.75.75 0 00-1.09-1.03l-2.955 3.129V2.75z" />
+        <path d="M3.5 12.75a.75.75 0 00-1.5 0v2.5A2.75 2.75 0 004.75 18h10.5A2.75 2.75 0 0018 15.25v-2.5a.75.75 0 00-1.5 0v2.5c0 .69-.56 1.25-1.25 1.25H4.75c-.69 0-1.25-.56-1.25-1.25v-2.5z" />
       </svg>
-      CSV-Export
+      {!isMobile && 'Als CSV exportieren'}
     </button>
   );
 };
