@@ -13,8 +13,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "SC-Scan | DVS",
-  description: "Sortierzentrum Eingangsscan - Deutscher Versand Service",
+  title: "Easyletter Tracking Tool | DVS",
+  description: "Easyletter Tracking Tool - Deutscher Versand Service",
   icons: {
     icon: "https://www.deutscherversandservice.de/favicon.ico",
     shortcut: "https://www.deutscherversandservice.de/favicon.ico",

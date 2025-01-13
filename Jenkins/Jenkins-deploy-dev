@@ -5,7 +5,7 @@ pipeline {
     agent {label 'slave'}
     
     environment {
-        appName = 'sc-scan'
+        appName = 'easyletter-tracking-tool'
         dockerRegistry = 'docker-test.postcon.net'
     }
 

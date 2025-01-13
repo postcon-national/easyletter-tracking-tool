@@ -10,6 +10,7 @@ export const scan = (
   setData: (value: React.SetStateAction<Code[]>) => void
 ) => {
   const zustellpartnerId = scannedData.slice(25, 28);
+  const abladestellenId = scannedData[28];
   const newEntry: Code = {
     id: (data.length + 1).toString(),
     sidDVS: scannedData.slice(4, 20),
@@ -18,7 +19,7 @@ export const scan = (
     gam: formatDateTime(new Date()),
     status: "VALID",
     erfasser: "4202",
-    zust: zustellpartnerId,
+    zust: zustellpartnerId + abladestellenId,
   };
   setData((prevData) => [...prevData, newEntry]);
 };

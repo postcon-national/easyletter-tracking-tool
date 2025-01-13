@@ -6,9 +6,9 @@ export const exportToCSV = async (
 ) => {
   try {
     // 2. Convert your data to CSV (client-side or from your /api/export-csv).
-    const response = await fetch('/api/export-csv', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+    const response = await fetch("/api/export-csv", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify(data),
     });
 
@@ -22,24 +22,24 @@ export const exportToCSV = async (
     // 3. Prompt the user with the Save File Picker.
     //    If they cancel, this throws an AbortError.
     const now = new Date();
-    const timestamp = now.toISOString().replace(/[-:.]/g, '').slice(0, 15);
+    const timestamp = now.toISOString().replace(/[-:.]/g, "").slice(0, 15);
     const suggestedName = `${timestamp}_Trackingdaten_dvs.csv`;
 
-    const hasFileSystemAccess = 'showSaveFilePicker' in window;
+    const hasFileSystemAccess = "showSaveFilePicker" in window;
 
     if (!hasFileSystemAccess) {
       fallbackDownload(new Blob([csvText]), setData);
       return;
     }
-    
+
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const fileHandle = await (window as any).showSaveFilePicker({
       suggestedName,
       types: [
         {
-          description: 'CSV files',
+          description: "CSV files",
           accept: {
-            'text/csv': ['.csv'],
+            "text/csv": [".csv"],
           },
         },
       ],
@@ -51,48 +51,46 @@ export const exportToCSV = async (
     await writable.close();
 
     // 5. The user ACCEPTED and completed saving the file
-    console.log('User ACCEPTED. File saved.');
+    console.log("User ACCEPTED. File saved.");
     // ... at this point, you're sure the file was actually saved.
     // If you want to clear data now, you can do it safely:
-    localStorage.removeItem('sc-scan-data');
+    localStorage.removeItem("easyletter-tracking-tool-data");
     setData([]);
-
   } catch (err) {
     // If the user CANCELS the save dialog, it throws an AbortError
-        console.log('User CANCELED:', err);
+    console.log("User CANCELED:", err);
   }
 };
 
 async function fallbackDownload(
-    csvBlob: Blob,
-    setData: (value: React.SetStateAction<Code[]>) => void
-  ) {
-    try {
-      // Create a temporary Blob URL
-      const url = URL.createObjectURL(csvBlob);
-  
-      // Generate a filename with current date/time
-      const now = new Date();
-      const timestamp = now.toISOString().replace(/[-:.]/g, '').slice(0, 15);
-      const filename = `${timestamp}_Trackingdaten_dvs.csv`;
-  
-      // Create a temporary <a> element
-      const link = document.createElement('a');
-      link.href = url;
-      link.setAttribute('download', filename);
-      document.body.appendChild(link);
-  
-      // Trigger download
-      link.click();
-  
-      // Cleanup
-      document.body.removeChild(link);
-      URL.revokeObjectURL(url);
-  
-        localStorage.removeItem('sc-scan-data');
-        setData([]);
-  
-    } catch (err) {
-      console.error('Fallback download failed:', err);
-    }
+  csvBlob: Blob,
+  setData: (value: React.SetStateAction<Code[]>) => void
+) {
+  try {
+    // Create a temporary Blob URL
+    const url = URL.createObjectURL(csvBlob);
+
+    // Generate a filename with current date/time
+    const now = new Date();
+    const timestamp = now.toISOString().replace(/[-:.]/g, "").slice(0, 15);
+    const filename = `${timestamp}_Trackingdaten_dvs.csv`;
+
+    // Create a temporary <a> element
+    const link = document.createElement("a");
+    link.href = url;
+    link.setAttribute("download", filename);
+    document.body.appendChild(link);
+
+    // Trigger download
+    link.click();
+
+    // Cleanup
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+
+    localStorage.removeItem("easyletter-tracking-tool-data");
+    setData([]);
+  } catch (err) {
+    console.error("Fallback download failed:", err);
   }
+}
