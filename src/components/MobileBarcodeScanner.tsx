@@ -228,27 +228,43 @@ const MobileBarcodeScanner: React.FC<MobileBarcodeScannerProps> = ({
       <div className={`relative ${isMobile ? 'w-full' : 'w-[400px]'}`}>
         {/* Video container with scanning overlay */}
         <div className={`relative ${isMobile ? 'aspect-[3/4]' : 'aspect-video'} rounded-lg overflow-hidden bg-black`}>
+          {/* Background pattern */}
+          <div className="absolute inset-0 scanner-background" />
           <video 
             ref={videoRef} 
             className="absolute inset-0 w-full h-full object-cover"
             playsInline
           />
+          {/* Success flash animation */}
+          {showSuccess && (
+            <div className="absolute inset-0 bg-white/30 animate-flash" />
+          )}
           {/* Scanning overlay */}
           <div className="absolute inset-0 flex items-center justify-center">
+            {/* Semi-transparent overlay */}
+            <div className="absolute inset-0 bg-black/40">
+              {/* Clear center area */}
+              <div className="absolute inset-0 flex items-center justify-center">
+                <div className={`relative ${isMobile ? 'w-56 h-56' : 'w-48 h-48'} bg-transparent`}>
+                  {/* Cutout effect */}
+                  <div className="absolute inset-0 backdrop-blur-none" />
+                </div>
+              </div>
+            </div>
             <div className={`relative ${isMobile ? 'w-56 h-56' : 'w-48 h-48'}`}>
-              {/* Corner markers */}
-              <div className={`absolute top-0 left-0 w-6 h-6 border-l-2 border-t-2 transition-colors duration-300 ${!isScanning ? 'border-[var(--dvs-gray)]' : 'border-[var(--dvs-orange)]'}`}></div>
-              <div className={`absolute top-0 right-0 w-6 h-6 border-r-2 border-t-2 transition-colors duration-300 ${!isScanning ? 'border-[var(--dvs-gray)]' : 'border-[var(--dvs-orange)]'}`}></div>
-              <div className={`absolute bottom-0 left-0 w-6 h-6 border-l-2 border-b-2 transition-colors duration-300 ${!isScanning ? 'border-[var(--dvs-gray)]' : 'border-[var(--dvs-orange)]'}`}></div>
-              <div className={`absolute bottom-0 right-0 w-6 h-6 border-r-2 border-b-2 transition-colors duration-300 ${!isScanning ? 'border-[var(--dvs-gray)]' : 'border-[var(--dvs-orange)]'}`}></div>
+              {/* Corner markers with modern design */}
+              <div className={`absolute top-0 left-0 w-8 h-8 border-l-2 border-t-2 rounded-tl transition-colors duration-300 ${!isScanning ? 'border-white/60' : 'border-white'}`}></div>
+              <div className={`absolute top-0 right-0 w-8 h-8 border-r-2 border-t-2 rounded-tr transition-colors duration-300 ${!isScanning ? 'border-white/60' : 'border-white'}`}></div>
+              <div className={`absolute bottom-0 left-0 w-8 h-8 border-l-2 border-b-2 rounded-bl transition-colors duration-300 ${!isScanning ? 'border-white/60' : 'border-white'}`}></div>
+              <div className={`absolute bottom-0 right-0 w-8 h-8 border-r-2 border-b-2 rounded-br transition-colors duration-300 ${!isScanning ? 'border-white/60' : 'border-white'}`}></div>
               {/* Scanning line animation */}
-              <div className={`absolute top-0 left-0 right-0 h-0.5 transition-colors duration-300 ${!isScanning ? 'bg-[var(--dvs-gray)]' : 'bg-[var(--dvs-orange)] animate-scan'}`}></div>
+              <div className={`absolute top-0 left-0 right-0 h-0.5 transition-colors duration-300 ${!isScanning ? 'bg-white/60' : 'bg-white animate-scan'}`}></div>
             </div>
           </div>
-          {/* Scanning instructions */}
+          {/* Scanning instructions with improved visibility */}
           <div className="absolute bottom-4 left-0 right-0 text-center">
-            <div className="inline-block px-3 py-1.5 bg-black/50 rounded-full">
-              <p className="text-white text-sm font-medium">
+            <div className="inline-block px-4 py-2 bg-white/90 rounded-lg shadow-lg">
+              <p className="text-[var(--dvs-gray-dark)] text-base font-medium">
                 {!isScanning ? 'Bitte warten...' : 'Barcode in den Rahmen halten'}
               </p>
             </div>
