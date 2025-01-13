@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import { Code, Column } from '@/types/types';
 import StatusTag from './StatusTag';
+import EmptyState from './EmptyState';
 
 interface DataTableProps {
   columns: Array<Column<Code>>;
@@ -187,28 +188,10 @@ const DataTable: React.FC<DataTableProps> = ({
     return buttons;
   };
 
-  if (data.length === 0) {
-    return (
-      <div className="text-center py-12 bg-[var(--dvs-gray-light)] rounded-lg">
-        <div className="flex flex-col items-center gap-4">
-          <div className="w-16 h-16 rounded-full bg-white flex items-center justify-center shadow-sm">
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-[var(--dvs-gray)]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 4v1m6 11h2m-6 0h-2m4-7h.01M5 20h14a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-            </svg>
-          </div>
-          <div className="font-geist-sans">
-            <h3 className="text-lg font-medium text-[var(--dvs-gray-dark)]">Keine Barcodes gescannt</h3>
-            <p className="text-[var(--dvs-gray)] mt-1">Scannen Sie einen Barcode, um ihn der Liste hinzuzufügen.</p>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
   return (
     <div className="space-y-4">
       {/* Search and Info Bar */}
-      <div className={`flex ${isMobile ? 'flex-col gap-3' : 'justify-between items-center'}`}>
+      <div className={`flex ${isMobile ? 'flex-col space-y-3' : 'justify-between items-center'}`}>
         <div className="relative">
           <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
             <svg className="h-4 w-4 text-[var(--dvs-gray)]" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
@@ -255,95 +238,106 @@ const DataTable: React.FC<DataTableProps> = ({
         </div>
       </div>
 
-      {/* Table */}
-      <div className="overflow-x-auto rounded-lg shadow-sm border border-gray-200">
-        <table className="min-w-full divide-y divide-gray-200">
-          <thead className="bg-[var(--dvs-gray-light)]">
-            <tr>
-              <th className={`${isMobile ? 'px-2 py-2' : 'px-4 py-3'} w-10`}>
-                <input
-                  type="checkbox"
-                  checked={selectedRows.length === data.length && data.length > 0}
-                  onChange={handleSelectAll}
-                  className="form-checkbox h-4 w-4 rounded border-gray-200 text-[var(--dvs-orange)] focus:ring-0 focus:border-[var(--dvs-orange)] transition-colors checked:bg-[var(--dvs-orange)] checked:hover:bg-[var(--dvs-orange)] hover:bg-[var(--dvs-orange)]/10"
-                />
-              </th>
-              {columns.map((column) => (
-                <th
-                  key={column.key.toString()}
-                  onClick={() => handleSort(column.key)}
-                  className={`${isMobile ? 'px-2 py-2' : 'px-4 py-3'} text-left text-xs font-medium text-[var(--dvs-gray)] uppercase tracking-wider cursor-pointer group hover:text-[var(--dvs-gray-dark)] select-none ${
-                    isMobile && (column.key === 'dmc' || column.key === 'gam' || column.key === 'status') ? '' : isMobile ? 'hidden' : ''
-                  }`}
-                >
-                  <div className="flex items-center gap-1">
-                    {column.label}
-                    <div className="flex flex-col text-[var(--dvs-orange)] opacity-0 group-hover:opacity-50">
-                      {sortConfig.key === column.key ? (
-                        sortConfig.direction === 'asc' ? (
-                          <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3" viewBox="0 0 20 20" fill="currentColor">
-                            <path fillRule="evenodd" d="M14.707 10.293a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 111.414-1.414L10 13.586l3.293-3.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                          </svg>
-                        ) : (
-                          <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3" viewBox="0 0 20 20" fill="currentColor">
-                            <path fillRule="evenodd" d="M5.293 9.707a1 1 0 010-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 01-1.414 1.414L10 6.414l-3.293 3.293a1 1 0 01-1.414 0z" clipRule="evenodd" />
-                          </svg>
-                        )
-                      ) : (
-                        <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3" viewBox="0 0 20 20" fill="currentColor">
-                          <path fillRule="evenodd" d="M10 3a1 1 0 01.707.293l3 3a1 1 0 01-1.414 1.414L10 5.414 7.707 7.707a1 1 0 01-1.414-1.414l3-3A1 1 0 0110 3zm-3.707 9.293a1 1 0 011.414 0L10 14.586l2.293-2.293a1 1 0 011.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clipRule="evenodd" />
-                        </svg>
-                      )}
-                    </div>
-                  </div>
-                </th>
-              ))}
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-gray-200 bg-white">
-            {paginatedData.map((row) => (
-              <tr
-                key={row.id}
-                className={`transition-colors ${
-                  selectedRows.includes(row) 
-                    ? 'bg-[#fff9f5]' 
-                    : 'hover:bg-[#fafafa]'
-                }`}
-              >
-                <td className={`${isMobile ? 'px-2 py-2' : 'px-4 py-3'}`}>
-                  <input
-                    type="checkbox"
-                    checked={selectedRows.includes(row)}
-                    onChange={() => handleSelectRow(row)}
-                    className="form-checkbox h-4 w-4 rounded border-gray-200 text-[var(--dvs-orange)] focus:ring-0 focus:border-[var(--dvs-orange)] transition-colors checked:bg-[var(--dvs-orange)] checked:hover:bg-[var(--dvs-orange)] hover:bg-[var(--dvs-orange)]/10"
-                  />
-                </td>
-                {columns.map((column) => (
-                  <td
-                    key={`${row.id}-${column.key.toString()}`}
-                    className={`${isMobile ? 'px-2 py-2' : 'px-4 py-3'} text-sm text-[var(--dvs-gray-dark)] whitespace-nowrap ${
-                      isMobile && (column.key === 'dmc' || column.key === 'gam' || column.key === 'status') ? '' : isMobile ? 'hidden' : ''
+      {/* Table or Empty State */}
+      {data.length === 0 ? (
+        <EmptyState isMobile={isMobile} />
+      ) : (
+        <div className={`bg-white rounded-lg ${isMobile ? 'shadow-sm' : 'shadow-md'} overflow-hidden`}>
+          {/* Table */}
+          <div className="overflow-x-auto rounded-lg shadow-sm border border-gray-200">
+            <table className="min-w-full divide-y divide-gray-200">
+              <thead className="bg-[var(--dvs-gray-light)]">
+                <tr>
+                  <th className={`${isMobile ? 'px-2 py-2' : 'px-4 py-3'} w-10`}>
+                    <input
+                      type="checkbox"
+                      checked={selectedRows.length === data.length && data.length > 0}
+                      onChange={handleSelectAll}
+                      className="form-checkbox h-4 w-4 rounded border-gray-200 text-[var(--dvs-orange)] focus:ring-0 focus:border-[var(--dvs-orange)] transition-colors checked:bg-[var(--dvs-orange)] checked:hover:bg-[var(--dvs-orange)] hover:bg-[var(--dvs-orange)]/10"
+                    />
+                  </th>
+                  {columns.map((column) => (
+                    <th
+                      key={column.key.toString()}
+                      onClick={() => handleSort(column.key)}
+                      className={`${isMobile ? 'px-2 py-2' : 'px-4 py-3'} text-left text-xs font-medium text-[var(--dvs-gray)] uppercase tracking-wider cursor-pointer group hover:text-[var(--dvs-gray-dark)] select-none ${
+                        isMobile && (column.key === 'dmc' || column.key === 'gam' || column.key === 'status') ? '' : isMobile ? 'hidden' : ''
+                      }`}
+                    >
+                      <div className="flex items-center gap-1">
+                        {column.label}
+                        <div className="flex flex-col text-[var(--dvs-orange)] opacity-0 group-hover:opacity-50">
+                          {sortConfig.key === column.key ? (
+                            sortConfig.direction === 'asc' ? (
+                              <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3" viewBox="0 0 20 20" fill="currentColor">
+                                <path fillRule="evenodd" d="M14.707 10.293a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 111.414-1.414L10 13.586l3.293-3.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                              </svg>
+                            ) : (
+                              <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3" viewBox="0 0 20 20" fill="currentColor">
+                                <path fillRule="evenodd" d="M5.293 9.707a1 1 0 010-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 01-1.414 1.414L10 6.414l-3.293 3.293a1 1 0 01-1.414 0z" clipRule="evenodd" />
+                              </svg>
+                            )
+                          ) : (
+                            <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3" viewBox="0 0 20 20" fill="currentColor">
+                              <path fillRule="evenodd" d="M10 3a1 1 0 01.707.293l3 3a1 1 0 01-1.414 1.414L10 5.414 7.707 7.707a1 1 0 01-1.414-1.414l3-3A1 1 0 0110 3zm-3.707 9.293a1 1 0 011.414 0L10 14.586l2.293-2.293a1 1 0 011.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clipRule="evenodd" />
+                            </svg>
+                          )}
+                        </div>
+                      </div>
+                    </th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-gray-200 bg-white">
+                {paginatedData.map((row) => (
+                  <tr
+                    key={row.id}
+                    className={`transition-colors ${
+                      selectedRows.includes(row) 
+                        ? 'bg-[#fff9f5]' 
+                        : 'hover:bg-[#fafafa]'
                     }`}
                   >
-                    {column.key === 'status' ? (
-                      <StatusTag status={row[column.key]} />
-                    ) : column.format ? (
-                      column.format(row[column.key])
-                    ) : (
-                      row[column.key]
-                    )}
-                  </td>
+                    <td className={`${isMobile ? 'px-2 py-2' : 'px-4 py-3'}`}>
+                      <input
+                        type="checkbox"
+                        checked={selectedRows.includes(row)}
+                        onChange={() => handleSelectRow(row)}
+                        className="form-checkbox h-4 w-4 rounded border-gray-200 text-[var(--dvs-orange)] focus:ring-0 focus:border-[var(--dvs-orange)] transition-colors checked:bg-[var(--dvs-orange)] checked:hover:bg-[var(--dvs-orange)] hover:bg-[var(--dvs-orange)]/10"
+                      />
+                    </td>
+                    {columns.map((column) => (
+                      <td
+                        key={`${row.id}-${column.key.toString()}`}
+                        className={`${isMobile ? 'px-2 py-2' : 'px-4 py-3'} text-sm text-[var(--dvs-gray-dark)] whitespace-nowrap ${
+                          isMobile && (column.key === 'dmc' || column.key === 'gam' || column.key === 'status') ? '' : isMobile ? 'hidden' : ''
+                        }`}
+                      >
+                        {column.key === 'status' ? (
+                          <StatusTag status={row[column.key]} />
+                        ) : column.format ? (
+                          column.format(row[column.key])
+                        ) : (
+                          row[column.key]
+                        )}
+                      </td>
+                    ))}
+                  </tr>
                 ))}
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
 
-      {/* Pagination */}
-      {totalPages > 1 && (
-        <div className={`flex justify-center gap-2 items-center ${isMobile ? 'text-sm' : ''}`}>
-          {renderPaginationButtons()}
+      {/* Pagination and Actions */}
+      {data.length > 0 && (
+        <div className={`flex ${isMobile ? 'flex-col gap-3' : 'justify-between items-center'}`}>
+          {totalPages > 1 && (
+            <div className={`flex justify-center gap-2 items-center ${isMobile ? 'text-sm' : ''}`}>
+              {renderPaginationButtons()}
+            </div>
+          )}
         </div>
       )}
     </div>
