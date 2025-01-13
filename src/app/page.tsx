@@ -101,7 +101,7 @@ const Home: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-[var(--dvs-gray-light)]">
-      <header className="bg-white shadow-sm">
+      <header className="bg-white shadow-[0_1px_3px_0_rgb(0,0,0,0.05)]">
         <div className={`mx-auto ${isMobile ? 'px-4 py-3' : 'max-w-7xl px-6 py-5'}`}>
           <div className="flex items-center justify-between">
             <div>
@@ -125,33 +125,33 @@ const Home: React.FC = () => {
       <main className={`mx-auto ${isMobile ? 'p-2' : 'max-w-7xl px-6 py-6'}`}>
         {isMobile ? (
           <div className="flex flex-col h-[calc(100vh-96px)]">
-            <nav className="flex bg-white shadow-sm rounded-lg mb-2">
+            <nav className="flex bg-white rounded-xl shadow-[0_1px_3px_0_rgb(0,0,0,0.05)] mb-2">
               <button
                 onClick={() => setActiveTab('scan')}
-                className={`flex-1 flex items-center justify-center gap-1.5 py-2.5 text-sm font-medium transition-all duration-200 ${
+                className={`flex-1 flex items-center justify-center gap-1.5 py-2.5 text-sm font-medium transition-all duration-200 rounded-l-xl ${
                   activeTab === 'scan'
                     ? 'text-[var(--dvs-orange)] border-b-2 border-[var(--dvs-orange)] bg-[var(--dvs-orange)]/5'
                     : 'text-[var(--dvs-gray)] hover:text-[var(--dvs-gray-dark)] hover:bg-gray-50'
                 }`}
               >
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4">
-                  <path d="M3 4.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 4.5v15a2.25 2.25 0 0 1-2.25 2.25H5.25A2.25 2.25 0 0 1 3 19.5v-15Zm5.25-1.5a.75.75 0 0 0-.75.75v.75h9v-.75a.75.75 0 0 0-.75-.75h-7.5Zm5.25 4.5h3.75v3.75h-3.75V7.5Zm-4.5 0h3.75v3.75h-3.75V7.5ZM7.5 12h3.75v3.75H7.5V12Zm4.5 0h3.75v3.75H12V12Z" />
+                  <path d="M6 3a3 3 0 0 0-3 3v12a3 3 0 0 0 3 3h12a3 3 0 0 0 3-3V6a3 3 0 0 0-3-3H6zm1.5 1.5h9a1.5 1.5 0 0 1 1.5 1.5v9a1.5 1.5 0 0 1-1.5 1.5h-9A1.5 1.5 0 0 1 6 15V6a1.5 1.5 0 0 1 1.5-1.5zm0 3V12h9V7.5h-9zm0 6V18h9v-4.5h-9z" />
                 </svg>
                 Scanner
               </button>
               <button
                 onClick={() => setActiveTab('table')}
-                className={`flex-1 flex items-center justify-center gap-1.5 py-2.5 text-sm font-medium transition-all duration-200 ${
+                className={`flex-1 flex items-center justify-center gap-1.5 py-2.5 text-sm font-medium transition-all duration-200 rounded-r-xl ${
                   activeTab === 'table'
                     ? 'text-[var(--dvs-orange)] border-b-2 border-[var(--dvs-orange)] bg-[var(--dvs-orange)]/5'
                     : 'text-[var(--dvs-gray)] hover:text-[var(--dvs-gray-dark)] hover:bg-gray-50'
                 }`}
               >
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4">
-                  <path fillRule="evenodd" d="M2.625 6.75a1.125 1.125 0 1 1 2.25 0 1.125 1.125 0 0 1-2.25 0Zm4.875 0A.75.75 0 0 1 8.25 6h12a.75.75 0 0 1 0 1.5h-12a.75.75 0 0 1-.75-.75ZM2.625 12a1.125 1.125 0 1 1 2.25 0 1.125 1.125 0 0 1-2.25 0ZM7.5 12a.75.75 0 0 1 .75-.75h12a.75.75 0 0 1 0 1.5h-12A.75.75 0 0 1 7.5 12Zm-4.875 5.25a1.125 1.125 0 1 1 2.25 0 1.125 1.125 0 0 1-2.25 0Zm4.875 0a.75.75 0 0 1 .75-.75h12a.75.75 0 0 1 0 1.5h-12a.75.75 0 0 1-.75-.75Z" />
+                  <path d="M5.25 3A2.25 2.25 0 0 0 3 5.25v13.5A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V5.25A2.25 2.25 0 0 0 18.75 3H5.25zM6.75 7.5a.75.75 0 0 1 .75-.75h9a.75.75 0 0 1 0 1.5h-9a.75.75 0 0 1-.75-.75zm0 4.5a.75.75 0 0 1 .75-.75h9a.75.75 0 0 1 0 1.5h-9a.75.75 0 0 1-.75-.75zm0 4.5a.75.75 0 0 1 .75-.75h9a.75.75 0 0 1 0 1.5h-9a.75.75 0 0 1-.75-.75z" />
                 </svg>
                 Übersicht {data.length > 0 && (
-                  <span className="ml-1 px-1.5 py-0.5 rounded-full bg-[var(--dvs-orange)]/10 text-[var(--dvs-orange)] text-xs">
+                  <span className="ml-1 px-1.5 py-0.5 rounded-full bg-[var(--dvs-orange)]/10 text-[var(--dvs-orange)] text-xs font-medium">
                     {data.length}
                   </span>
                 )}
@@ -160,7 +160,7 @@ const Home: React.FC = () => {
 
             <div className="flex-1 overflow-hidden">
               {activeTab === 'scan' ? (
-                <div className="bg-white rounded-lg shadow-sm p-2 h-full">
+                <div className="bg-white rounded-xl shadow-[0_1px_3px_0_rgb(0,0,0,0.05)] p-2 h-full">
                   <MobileBarcodeScanner 
                     onScan={handleScan} 
                     error={alertMessage} 
@@ -170,7 +170,7 @@ const Home: React.FC = () => {
                   />
                 </div>
               ) : (
-                <div className="bg-white rounded-lg shadow-sm p-2 h-full overflow-auto">
+                <div className="bg-white rounded-xl shadow-[0_1px_3px_0_rgb(0,0,0,0.05)] p-2 h-full overflow-auto">
                   <DataTable
                     columns={columns}
                     data={data}
@@ -190,11 +190,11 @@ const Home: React.FC = () => {
           </div>
         ) : (
           <>
-            <div className="bg-white rounded-lg shadow-sm p-5 mb-5">
+            <div className="bg-white rounded-xl shadow-[0_1px_3px_0_rgb(0,0,0,0.05)] p-5 mb-5">
               <BarcodeScanner onScan={handleScan} error={alertMessage} checkDuplicate={checkDuplicate} />
             </div>
             
-            <div className="bg-white rounded-lg shadow-sm p-5">
+            <div className="bg-white rounded-xl shadow-[0_1px_3px_0_rgb(0,0,0,0.05)] p-5">
               <DataTable
                 columns={columns}
                 data={data}
