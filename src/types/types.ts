@@ -1,3 +1,5 @@
+import { ReactNode } from "react";
+
 export type StatusType = "VALID" | "NON_VALID" | "REDIRECTED";
 
 export interface Code {
@@ -15,4 +17,5 @@ export interface Column<T> {
   key: keyof T;
   label: string;
   format?: (value: T[keyof T]) => string;
+  cell?: (value: T[keyof T]) => ReactNode;
 }

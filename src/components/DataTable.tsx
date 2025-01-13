@@ -315,6 +315,8 @@ const DataTable: React.FC<DataTableProps> = ({
                       >
                         {column.key === 'status' ? (
                           <StatusTag status={row[column.key]} />
+                        ) : column.cell ? (
+                          column.cell(row[column.key])
                         ) : column.format ? (
                           column.format(row[column.key])
                         ) : (

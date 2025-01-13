@@ -1,9 +1,9 @@
 import { StatusType } from "@/types/types";
 
 const statusStyles: Record<StatusType, string> = {
-  VALID: "bg-green-100 text-green-800",
-  NON_VALID: "bg-red-100 text-red-800",
-  REDIRECTED: "bg-yellow-100 text-yellow-800",
+  VALID: "bg-green-50 text-green-700 ring-1 ring-inset ring-green-600/20",
+  NON_VALID: "bg-red-50 text-red-700 ring-1 ring-inset ring-red-600/20",
+  REDIRECTED: "bg-yellow-50 text-yellow-700 ring-1 ring-inset ring-yellow-600/20",
 };
 
 interface StatusTagProps {
@@ -11,8 +11,8 @@ interface StatusTagProps {
 }
 
 export default function StatusTag({ status }: StatusTagProps) {
-  const baseStyles = "px-2 py-1 rounded-full text-xs font-medium inline-block";
-  const colorStyles = statusStyles[status] || "bg-gray-100 text-gray-800";
+  const baseStyles = "inline-flex items-center rounded-full px-1.5 py-0.5 text-xs font-medium";
+  const colorStyles = statusStyles[status] || "bg-gray-50 text-gray-700 ring-1 ring-inset ring-gray-600/20";
 
   return (
     <span className={`${baseStyles} ${colorStyles}`}>
