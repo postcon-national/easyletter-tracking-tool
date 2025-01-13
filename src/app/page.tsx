@@ -6,7 +6,7 @@ import MobileBarcodeScanner from '@/components/MobileBarcodeScanner';
 import DataTable from '@/components/DataTable';
 import DeleteButton from '@/components/DeleteButton';
 import ExportButton from '@/components/ExportButton';
-import { codes, columns } from '@/data/data';
+import { columns } from '@/data/data';
 import useWindowSize from '@/hooks/useWindowSize';
 import { exportToCSV } from '@/utils/cvs/functions';
 import { scan } from '@/utils/scan/functions';
@@ -41,7 +41,7 @@ const Home: React.FC = () => {
     }
   };
 
-  const [data, setData] = useState<Code[]>(codes);
+  const [data, setData] = useState<Code[]>([]);
   const [selectedRows, setSelectedRows] = useState<Code[]>([]);
   const [alertMessage, setAlertMessage] = useState<string | null>(null);
   const [isDataLoaded, setIsDataLoaded] = useState(false);
@@ -92,8 +92,15 @@ const Home: React.FC = () => {
   }, [data]);
 
   const checkDuplicate = useCallback((scannedData: string) => {
-    return data.some(item => item.dmc === scannedData.trim());
-  }, [data]);
+    // Force access to latest data state
+    const currentData = data;
+    if (!isDataLoaded) {
+      console.log('Data not yet loaded');
+      return false;
+    }
+    console.log('Checking duplicate with data length:', currentData.length);
+    return currentData.some(item => item.dmc === scannedData.trim());
+  }, [data, isDataLoaded]);
 
   if (isLoading) {
     return null;

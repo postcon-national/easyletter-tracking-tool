@@ -72,9 +72,14 @@ const MobileBarcodeScanner: React.FC<MobileBarcodeScannerProps> = ({
   // Handle active state changes
   useEffect(() => {
     if (isActive) {
+      setIsScanning(true);
       startCamera();
     } else {
+      setIsScanning(false);
       stopCamera();
+      // Reset refs when becoming inactive
+      lastScannedRef.current = "";
+      lastScanTimeRef.current = 0;
     }
     
     return () => {
@@ -123,7 +128,7 @@ const MobileBarcodeScanner: React.FC<MobileBarcodeScannerProps> = ({
             }, 2000);
           } 
           else if (code.data === lastScannedRef.current) {
-            setValidationError('Bitte warten Sie, bevor Sie denselben Barcode erneut scannen.');
+            setValidationError('Bitte warten Sie einen Moment, bevor Sie einen neuen Barcode scannen.');
             lastScanTimeRef.current = now;
             setTimeout(() => {
               setValidationError('');
