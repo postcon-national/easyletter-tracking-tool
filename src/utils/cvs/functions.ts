@@ -34,30 +34,51 @@ export const exportToCSV = async (
     // Create CSV content
     const csvContent = generateCSVContent(data);
 
-    // Upload to SFTP
-    const response = await fetch("/api/upload-sftp", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ content: csvContent, filename }),
-    });
+    try {
+      // Try SFTP upload first
+      const response = await fetch("/api/upload-sftp", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ content: csvContent, filename }),
+      });
 
-    if (!response.ok) {
-      throw new Error("Upload fehlgeschlagen");
+      if (!response.ok) {
+        throw new Error("Upload fehlgeschlagen");
+      }
+
+      // Clear data after successful upload
+      setData([]);
+      if (typeof window !== "undefined") {
+        localStorage.removeItem("scannedData");
+      }
+
+      return { success: true, filename };
+    } catch {
+      // If SFTP upload fails, throw a special error that the UI can handle
+      throw new Error("SFTP_FAILED");
     }
-
-    // Clear data after successful upload
-    setData([]);
-    if (typeof window !== "undefined") {
-      localStorage.removeItem("scannedData");
-    }
-
-    return { success: true, filename };
   } catch (error) {
     console.error("Export error:", error);
     throw error;
   }
+};
+
+// Separate function for downloading the file
+export const downloadCSV = (data: Code[], filename: string) => {
+  const csvContent = generateCSVContent(data);
+  const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.setAttribute("href", url);
+  link.setAttribute("download", filename);
+  link.style.visibility = "hidden";
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+  URL.revokeObjectURL(url);
+  return { downloadComplete: true };
 };
 
 function generateCSVContent(data: Code[]): string {
