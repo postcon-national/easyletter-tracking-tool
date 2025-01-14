@@ -1,6 +1,5 @@
 import { NextResponse } from "next/server";
 import { Client } from "ssh2";
-import { Code } from "@/types/types";
 
 const SFTP_CONFIG = {
   host: process.env.SFTP_HOST,
@@ -9,39 +8,9 @@ const SFTP_CONFIG = {
   password: process.env.SFTP_PASSWORD,
 };
 
-const generateCSV = (data: Code[]) => {
-  const headers = [
-    "sidDVS",
-    "sidZup",
-    "dmc",
-    "gam",
-    "erfasser",
-    "status",
-    "zust",
-  ];
-  const csvRows = [headers.join(";")];
-
-  data.forEach((row) => {
-    const values = headers.map((header) => {
-      const value = row[header as keyof Code];
-      return value ? `"${value}"` : "";
-    });
-    csvRows.push(values.join(";"));
-  });
-
-  return csvRows.join("\n");
-};
-
 export async function POST(request: Request) {
   try {
-    const data = await request.json();
-    const csvContent = generateCSV(data);
-
-    const timestamp = new Date()
-      .toISOString()
-      .replace(/[-:.]/g, "")
-      .slice(0, 15);
-    const filename = `${timestamp}_Trackingdaten_dvs.csv`;
+    const { content, filename } = await request.json();
 
     // Upload via SFTP
     await new Promise<void>((resolve, reject) => {
@@ -80,7 +49,7 @@ export async function POST(request: Request) {
               reject(err);
             });
 
-            writeStream.write(csvContent, (err) => {
+            writeStream.write(content, (err) => {
               if (err) {
                 console.error("SFTP: Write error:", err);
                 reject(err);
