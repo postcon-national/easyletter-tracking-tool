@@ -1,0 +1,25 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: sc-scan
+  namespace: dev
+  annotations:
+    nginx.ingress.kubernetes.io/ssl-redirect: "false"
+spec:
+  ingressClassName: nginx
+  tls:
+    - hosts:
+        - sc-scan-dev.k8s.postcon.net
+      secretName: sc-scan-tls
+  rules:
+    - host: sc-scan-dev.k8s.postcon.net
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: easyletter-tracking-tool
+                port:
+                  number: 80
+
