@@ -45,6 +45,7 @@ const Home: React.FC = () => {
   const [selectedRows, setSelectedRows] = useState<Code[]>([]);
   const [alertMessage, setAlertMessage] = useState<string | null>(null);
   const [isDataLoaded, setIsDataLoaded] = useState(false);
+  const [isExporting, setIsExporting] = useState(false);
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -73,9 +74,17 @@ const Home: React.FC = () => {
   };
 
   const handleExport = async () => {
-    await exportToCSV(data, setData);
-    if (typeof window !== 'undefined') {
-      localStorage.removeItem(LOCAL_STORAGE_KEY);
+    try {
+      setIsExporting(true);
+      setAlertMessage(null);
+      await exportToCSV(data, setData);
+      setAlertMessage('Datei erfolgreich hochgeladen');
+      // Clear message after 3 seconds
+      setTimeout(() => setAlertMessage(null), 3000);
+    } catch (error) {
+      setAlertMessage(`Export fehlgeschlagen: ${error instanceof Error ? error.message : 'Unbekannter Fehler'}`);
+    } finally {
+      setIsExporting(false);
     }
   };
 
@@ -161,6 +170,15 @@ const Home: React.FC = () => {
         </header>
 
         <main className={`mx-auto ${isMobile ? 'p-2' : 'max-w-7xl px-6 py-6'} space-y-6`}>
+          {alertMessage && (
+            <div className={`rounded-lg p-4 ${
+              alertMessage.includes('erfolgreich') 
+                ? 'bg-green-50 text-green-700 ring-1 ring-green-600/20' 
+                : 'bg-red-50 text-red-700 ring-1 ring-red-600/20'
+            } text-sm animate-fade-in`}>
+              {alertMessage}
+            </div>
+          )}
           {isMobile ? (
             <div className="flex flex-col h-[calc(100vh-96px)]">
               <nav className="flex bg-white rounded-xl shadow-sm mb-2 p-1">
@@ -225,7 +243,12 @@ const Home: React.FC = () => {
                     />
                     <div className="flex justify-end mt-3 space-x-2">
                       <DeleteButton onDelete={handleDelete} disabled={selectedRows.length === 0} isMobile={true} /> 
-                      <ExportButton onExport={handleExport} disabled={data.length === 0} isMobile={true} />
+                      <ExportButton 
+                        onExport={handleExport} 
+                        disabled={data.length === 0 || isExporting} 
+                        isMobile={true} 
+                        isLoading={isExporting}
+                      />
                     </div>
                   </div>
                 )}
@@ -253,7 +276,12 @@ const Home: React.FC = () => {
                 
                 <div className="flex justify-end mt-5 space-x-3">
                   <DeleteButton onDelete={handleDelete} disabled={selectedRows.length === 0} isMobile={false} /> 
-                  <ExportButton onExport={handleExport} disabled={data.length === 0} isMobile={false} />
+                  <ExportButton 
+                    onExport={handleExport} 
+                    disabled={data.length === 0 || isExporting} 
+                    isMobile={false} 
+                    isLoading={isExporting}
+                  />
                 </div>
               </div>
             </>
