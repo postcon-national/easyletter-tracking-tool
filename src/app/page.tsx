@@ -11,10 +11,14 @@ import useWindowSize from '@/hooks/useWindowSize';
 import { exportToCSV, downloadCSV } from '@/utils/cvs/functions';
 import { scan } from '@/utils/scan/functions';
 import { Code } from '@/types/types';
-import Image from 'next/image';
-
-const LOCAL_STORAGE_KEY = 'easyletter-tracking-tool-data';
-const ITEMS_PER_PAGE_KEY = 'easyletter-tracking-tool-items-per-page';
+import IconExportSuccess from '@/components/svg/IconExportSuccess';
+import IconExportError from '@/components/svg/IconExportError';
+import IconDismiss from '@/components/svg/IconDismiss';
+import IconScan from '@/components/svg/IconScan';
+import IconList from '@/components/svg/IconList';
+import Header from '@/components/Header';
+import DownloadDialog from '@/components/DownloadDialog';
+import { ITEMS_PER_PAGE_KEY, LOCAL_STORAGE_KEY } from '@/constants/constants'; 
 
 const Home: React.FC = () => {
   const { width } = useWindowSize();
@@ -160,50 +164,7 @@ const Home: React.FC = () => {
         opacity: 0.05
       }} />
       <div className="relative">
-        <header className="bg-white/80 backdrop-blur-sm shadow-sm sticky top-0 z-10 border-b border-gray-200/50">
-          <div className={`mx-auto ${isMobile ? 'px-4 py-2' : 'max-w-7xl px-6 py-4'}`}>
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <div className="relative group">
-                  <div className={`absolute -inset-2 bg-[var(--dvs-orange)]/10 rounded-xl opacity-0 group-hover:opacity-100 transition-all duration-300 ${isMobile ? 'hidden' : ''}`} />
-                  <Image 
-                    src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSs5fSe7cesYu_vRdemQYmiXaa5mXb3dtHyPg&s"
-                    alt="DVS Logo" 
-                    className="relative object-contain transition-transform group-hover:scale-105 duration-300"
-                    width={isMobile ? 32 : 44}
-                    height={isMobile ? 32 : 44}
-                    priority
-                  />
-                </div>
-                {!isMobile && <div className="h-8 w-px bg-gradient-to-b from-gray-200/40 via-gray-200 to-gray-200/40" />}
-                <h1 className={`font-semibold text-[var(--dvs-gray-dark)] ${isMobile ? 'text-base' : 'text-xl'} tracking-tight`}>
-                  {isMobile ? 'Tracking Tool' : 'Easyletter Tracking Tool'}
-                </h1>
-              </div>
-              
-              <div className={`flex items-center gap-2 ${isMobile ? 'px-2 py-1.5' : 'px-4 py-2.5'} rounded-lg border border-[var(--dvs-orange)]/10 bg-gradient-to-r from-[var(--dvs-orange)]/5 to-transparent hover:from-[var(--dvs-orange)]/10 hover:to-[var(--dvs-orange)]/5 transition-all duration-300`}>
-                <div className="relative">
-                  <div className="absolute inset-0 rounded-full bg-[var(--dvs-orange)]/5 animate-ping" style={{ animationDuration: '3s' }} />
-                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" 
-                       className={`${isMobile ? 'w-5 h-5' : 'w-6 h-6'} text-[var(--dvs-orange)] opacity-90 relative`}>
-                    <path fillRule="evenodd" d="M7.5 6a4.5 4.5 0 1 1 9 0 4.5 4.5 0 0 1-9 0ZM3.751 20.105a8.25 8.25 0 0 1 16.498 0 .75.75 0 0 1-.437.695A18.683 18.683 0 0 1 12 22.5c-2.786 0-5.433-.608-7.812-1.7a.75.75 0 0 1-.437-.695Z" clipRule="evenodd" />
-                  </svg>
-                </div>
-                <div className="flex flex-col">
-                  <div className="flex items-center gap-1.5">
-                    {!isMobile && <span className="text-sm font-medium text-[var(--dvs-gray)]">Station</span>}
-                    <span className="font-semibold text-[var(--dvs-orange)]">4202</span>
-                    <span className={`inline-flex items-center rounded-full bg-gradient-to-r from-green-50 to-green-50/50 ${isMobile ? 'px-1 py-0.5 text-[10px]' : 'px-1.5 py-0.5 text-xs'} font-medium text-green-700 ring-1 ring-inset ring-green-600/20`}>
-                      Aktiv
-                    </span>
-                  </div>
-                  {!isMobile && <span className="text-xs text-[var(--dvs-gray)]">Deutscher Versand Service</span>}
-                </div>
-              </div>
-            </div>
-          </div>
-        </header>
-
+        <Header isMobile={isMobile} />
         <main className={`mx-auto ${isMobile ? 'p-2' : 'max-w-7xl px-6 py-6'} space-y-6`}>
           {exportMessage && (
             <div 
@@ -230,15 +191,9 @@ const Home: React.FC = () => {
                 )}
                 
                 {exportMessage.includes('erfolgreich') ? (
-                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" 
-                       className={`${isMobile ? 'w-5 h-5' : 'w-6 h-6'} text-[var(--dvs-orange)] relative`}>
-                    <path fillRule="evenodd" d="M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12zm13.36-1.814a.75.75 0 10-1.22-.872l-3.236 4.53L9.53 12.22a.75.75 0 00-1.06 1.06l2.25 2.25a.75.75 0 001.14-.094l3.75-5.25z" clipRule="evenodd" />
-                  </svg>
+                  <IconExportSuccess isMobile={isMobile} />
                 ) : (
-                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" 
-                       className={`${isMobile ? 'w-5 h-5' : 'w-6 h-6'} text-red-600 relative`}>
-                    <path fillRule="evenodd" d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25zm-1.72 6.97a.75.75 0 10-1.06 1.06L10.94 12l-1.72 1.72a.75.75 0 101.06 1.06L12 13.06l1.72 1.72a.75.75 0 101.06-1.06L13.06 12l1.72-1.72a.75.75 0 10-1.06-1.06L12 10.94l-1.72-1.72z" clipRule="evenodd" />
-                  </svg>
+                  <IconExportError isMobile={isMobile} />
                 )}
               </div>
               
@@ -263,12 +218,11 @@ const Home: React.FC = () => {
                     : 'text-red-400 hover:text-red-500 hover:bg-red-50'
                 }`}
               >
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5">
-                  <path fillRule="evenodd" d="M5.47 5.47a.75.75 0 011.06 0L12 10.94l5.47-5.47a.75.75 0 111.06 1.06L13.06 12l5.47 5.47a.75.75 0 11-1.06 1.06L12 13.06l-5.47 5.47a.75.75 0 01-1.06-1.06L10.94 12 5.47 6.53a.75.75 0 010-1.06z" clipRule="evenodd" />
-                </svg>
+                <IconDismiss />
               </button>
             </div>
           )}
+         
           {isMobile ? (
             <div className="flex flex-col h-[calc(100vh-96px)]">
               <nav className="flex bg-white rounded-xl shadow-sm mb-2 p-1">
@@ -281,10 +235,7 @@ const Home: React.FC = () => {
                       : 'text-[var(--dvs-gray)] hover:text-[var(--dvs-gray-dark)] hover:bg-gradient-to-br hover:from-gray-50 hover:to-transparent border border-transparent hover:border-gray-100'
                     }`}
                 >
-                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" 
-                       className={`w-4 h-4 transition-all duration-300 ${activeTab === 'scan' ? 'scale-110 opacity-90' : 'opacity-70'}`}>
-                    <path d="M6 3a3 3 0 0 0-3 3v12a3 3 0 0 0 3 3h12a3 3 0 0 0 3-3V6a3 3 0 0 0-3-3H6zm1.5 1.5h9a1.5 1.5 0 0 1 1.5 1.5v9a1.5 1.5 0 0 1-1.5 1.5h-9A1.5 1.5 0 0 1 6 15V6a1.5 1.5 0 0 1 1.5-1.5zm0 3V12h9V7.5h-9zm0 6V18h9v-4.5h-9z" />
-                  </svg>
+                  <IconScan activeTab={activeTab} />
                   Scanner
                 </button>
                 <button
@@ -296,10 +247,7 @@ const Home: React.FC = () => {
                       : 'text-[var(--dvs-gray)] hover:text-[var(--dvs-gray-dark)] hover:bg-gradient-to-br hover:from-gray-50 hover:to-transparent border border-transparent hover:border-gray-100'
                     }`}
                 >
-                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" 
-                       className={`w-4 h-4 transition-all duration-300 ${activeTab === 'table' ? 'scale-110 opacity-90' : 'opacity-70'}`}>
-                    <path d="M5.25 3A2.25 2.25 0 0 0 3 5.25v13.5A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V5.25A2.25 2.25 0 0 0 18.75 3H5.25zM6.75 7.5a.75.75 0 0 1 .75-.75h9a.75.75 0 0 1 0 1.5h-9a.75.75 0 0 1-.75-.75zm0 4.5a.75.75 0 0 1 .75-.75h9a.75.75 0 0 1 0 1.5h-9a.75.75 0 0 1-.75-.75zm0 4.5a.75.75 0 0 1 .75-.75h9a.75.75 0 0 1 0 1.5h-9a.75.75 0 0 1-.75-.75z" />
-                  </svg>
+                  <IconList activeTab={activeTab} />
                   <span className="relative">Übersicht</span>
                   {data.length > 0 && (
                     <span className="relative ml-1 px-2 py-0.5 rounded-full bg-gradient-to-r from-[var(--dvs-orange)]/10 to-[var(--dvs-orange)]/5 text-[var(--dvs-orange)] text-xs font-medium ring-1 ring-inset ring-[var(--dvs-orange)]/10 [--tw-ring-color:transparent]">
@@ -381,41 +329,7 @@ const Home: React.FC = () => {
 
       {/* Custom Download Dialog */}
       {showDownloadDialog && (
-        <div className="fixed inset-0 bg-black/20 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-xl shadow-lg max-w-md w-full p-6 space-y-4">
-            <div className="flex items-start gap-4">
-              <div className="p-2 bg-[var(--dvs-orange)]/10 rounded-full">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" 
-                     className="w-6 h-6 text-[var(--dvs-orange)]">
-                  <path fillRule="evenodd" d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25zm-1.72 6.97a.75.75 0 10-1.06 1.06L10.94 12l-1.72 1.72a.75.75 0 101.06 1.06L12 13.06l1.72 1.72a.75.75 0 101.06-1.06L13.06 12l1.72-1.72a.75.75 0 10-1.06-1.06L12 10.94l-1.72-1.72z" clipRule="evenodd" />
-                </svg>
-              </div>
-              <div className="flex-1">
-                <h3 className="text-lg font-semibold text-[var(--dvs-gray-dark)]">Übertragung fehlgeschlagen</h3>
-                <p className="mt-1 text-sm text-[var(--dvs-gray)]">
-                  Möchten Sie die Datei stattdessen herunterladen?
-                </p>
-              </div>
-            </div>
-            <div className="flex justify-end gap-3 pt-2">
-              <button
-                onClick={handleDownloadCancel}
-                className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-[var(--dvs-gray-dark)] bg-white hover:bg-gray-50/80 rounded-lg shadow-sm transition-all duration-200 border border-gray-200 hover:border-gray-300 focus:outline-none focus:ring-2 focus:ring-[var(--dvs-orange)]/20 focus:ring-offset-1"
-              >
-                Abbrechen
-              </button>
-              <button
-                onClick={handleDownloadConfirm}
-                className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-[var(--dvs-orange)] bg-gradient-to-br from-[var(--dvs-orange)]/10 via-[var(--dvs-orange)]/5 to-transparent rounded-lg hover:from-[var(--dvs-orange)]/15 hover:via-[var(--dvs-orange)]/10 hover:to-transparent transition-all duration-200 shadow-sm hover:shadow border border-[var(--dvs-orange)]/10 focus:outline-none focus:ring-2 focus:ring-[var(--dvs-orange)]/20 focus:ring-offset-1"
-              >
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5 opacity-90">
-                  <path fillRule="evenodd" d="M12 2.25a.75.75 0 01.75.75v11.69l3.22-3.22a.75.75 0 111.06 1.06l-4.5 4.5a.75.75 0 01-1.06 0l-4.5-4.5a.75.75 0 111.06-1.06l3.22 3.22V3a.75.75 0 01.75-.75zm-9 13.5a.75.75 0 01.75.75v2.25a1.5 1.5 0 001.5 1.5h13.5a1.5 1.5 0 001.5-1.5V16.5a.75.75 0 011.5 0v2.25a3 3 0 01-3 3H5.25a3 3 0 01-3-3V16.5a.75.75 0 01.75-.75z" clipRule="evenodd" />
-                </svg>
-                Herunterladen
-              </button>
-            </div>
-          </div>
-        </div>
+        <DownloadDialog onCancel={handleDownloadCancel} onConfirm={handleDownloadConfirm} />
       )}
     </div>
   );
