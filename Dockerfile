@@ -34,6 +34,12 @@ WORKDIR /app
 ENV NODE_ENV production
 ENV NEXT_TELEMETRY_DISABLED 1
 
+# Add SFTP environment variables
+ENV SFTP_HOST=${SFTP_HOST}
+ENV SFTP_PORT=${SFTP_PORT}
+ENV SFTP_USERNAME=${SFTP_USERNAME}
+ENV SFTP_PASSWORD=${SFTP_PASSWORD}
+
 RUN addgroup --system --gid 1001 nodejs
 RUN adduser --system --uid 1001 nextjs
 

@@ -1,0 +1,12 @@
+version: "3.8"
+
+services:
+  app:
+    build: .
+    ports:
+      - "3000:3000"
+    environment:
+      - SFTP_HOST=${SFTP_HOST}
+      - SFTP_PORT=${SFTP_PORT}
+      - SFTP_USERNAME=${SFTP_USERNAME}
+      - SFTP_PASSWORD=${SFTP_PASSWORD}
