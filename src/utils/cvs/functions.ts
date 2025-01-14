@@ -5,8 +5,19 @@ export const exportToCSV = async (
   setData: (data: Code[]) => void
 ) => {
   try {
-    // Get the first record's zust value for the filename
-    const zust = data[0]?.zust || "0000";
+    // Check if there is data to export
+    if (!data.length) {
+      throw new Error("Keine Daten zum Exportieren vorhanden");
+    }
+
+    // Get the first record's zust value
+    const firstZust = data[0].zust;
+
+    // Check if all records have the same zust value
+    const hasInconsistentZust = data.some((item) => item.zust !== firstZust);
+    if (hasInconsistentZust) {
+      throw new Error("Alle Datensätze müssen den gleichen ZUP + ABL haben");
+    }
 
     // Generate timestamp in required format
     const now = new Date();
@@ -17,8 +28,8 @@ export const exportToCSV = async (
       now.getHours().toString().padStart(2, "0") +
       now.getMinutes().toString().padStart(2, "0");
 
-    // Construct filename
-    const filename = `${timestamp}_${zust}_Trackingdaten_dvs.csv`;
+    // Construct filename using the validated zust
+    const filename = `${timestamp}_${firstZust}_Trackingdaten_dvs.csv`;
 
     // Create CSV content
     const csvContent = generateCSVContent(data);
