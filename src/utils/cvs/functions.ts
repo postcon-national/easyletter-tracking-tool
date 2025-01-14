@@ -18,7 +18,6 @@ export const exportToCSV = async (
     }
 
     const result = await response.json();
-    console.log("File uploaded successfully:", result.filename);
 
     // Clear local storage and data after successful upload
     localStorage.removeItem("easyletter-tracking-tool-data");

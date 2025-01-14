@@ -13,7 +13,7 @@ const ExportButton: React.FC<ExportButtonProps> = ({ onExport, disabled, classNa
     <button
       onClick={onExport}
       disabled={disabled || isLoading}
-      title="Als CSV exportieren"
+      title="Übertragen"
       className={className || `
         inline-flex items-center justify-center ${isMobile ? 'w-10 h-10' : 'gap-1.5 px-3 py-1.5'} rounded-lg text-sm
         transition-all duration-300
@@ -34,15 +34,14 @@ const ExportButton: React.FC<ExportButtonProps> = ({ onExport, disabled, classNa
       ) : (
         <>
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" 
-               className={`${isMobile ? 'w-5 h-5' : 'w-4 h-4'} transition-opacity duration-200 ${disabled ? 'opacity-40' : 'opacity-80'}`}>
-            <path d="M10.75 2.75a.75.75 0 00-1.5 0v8.614L6.295 8.235a.75.75 0 10-1.09 1.03l4.25 4.5a.75.75 0 001.09 0l4.25-4.5a.75.75 0 00-1.09-1.03l-2.955 3.129V2.75z" />
-            <path d="M3.5 12.75a.75.75 0 00-1.5 0v2.5A2.75 2.75 0 004.75 18h10.5A2.75 2.75 0 0018 15.25v-2.5a.75.75 0 00-1.5 0v2.5c0 .69-.56 1.25-1.25 1.25H4.75c-.69 0-1.25-.56-1.25-1.25v-2.5z" />
+               className={`${isMobile ? 'w-6 h-6' : 'w-5 h-5'} transition-opacity duration-200 ${disabled ? 'opacity-50' : 'opacity-90'}`}>
+            <path d="M10 14.25a.75.75 0 01-.75-.75V6.31L6.53 9.03a.75.75 0 01-1.06-1.06l4-4a.75.75 0 011.06 0l4 4a.75.75 0 11-1.06 1.06L10.75 6.31v7.19a.75.75 0 01-.75.75z" />
+            <path d="M4.75 14h10.5a.75.75 0 010 1.5H4.75a.75.75 0 010-1.5z" />
           </svg>
-          {!isMobile && 'Als CSV exportieren'}
+          {!isMobile && 'Übertragen'}
         </>
       )}
     </button>
   );
 };
-
 export default ExportButton;

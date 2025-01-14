@@ -43,7 +43,8 @@ const Home: React.FC = () => {
 
   const [data, setData] = useState<Code[]>([]);
   const [selectedRows, setSelectedRows] = useState<Code[]>([]);
-  const [alertMessage, setAlertMessage] = useState<string | null>(null);
+  const [exportMessage, setExportMessage] = useState<string | null>(null);
+  const [scannerMessage, setScannerMessage] = useState<string | null>(null);
   const [isDataLoaded, setIsDataLoaded] = useState(false);
   const [isExporting, setIsExporting] = useState(false);
 
@@ -76,13 +77,20 @@ const Home: React.FC = () => {
   const handleExport = async () => {
     try {
       setIsExporting(true);
-      setAlertMessage(null);
+      setExportMessage(null);
       await exportToCSV(data, setData);
-      setAlertMessage('Datei erfolgreich hochgeladen');
-      // Clear message after 3 seconds
-      setTimeout(() => setAlertMessage(null), 3000);
+      setExportMessage(`Datei erfolgreich hochgeladen`);
+      // Start fade-out after 5 seconds
+      setTimeout(() => {
+        const messageElement = document.querySelector('[role="alert"]');
+        if (messageElement) {
+          messageElement.classList.add('opacity-0');
+          // Remove message after fade-out animation completes
+          setTimeout(() => setExportMessage(null), 300);
+        }
+      }, 5000);
     } catch (error) {
-      setAlertMessage(`Export fehlgeschlagen: ${error instanceof Error ? error.message : 'Unbekannter Fehler'}`);
+      setExportMessage(`Export fehlgeschlagen: ${error instanceof Error ? error.message : 'Unbekannter Fehler'}`);
     } finally {
       setIsExporting(false);
     }
@@ -94,9 +102,9 @@ const Home: React.FC = () => {
 
     if (!exists) {
       scan(trimmedData, data, setData);
-      setAlertMessage(null);
+      setScannerMessage(null);
     } else {
-      setAlertMessage('Dieser Barcode wurde bereits gescannt.');
+      setScannerMessage('Dieser Barcode wurde bereits gescannt.');
     }
   }, [data]);
 
@@ -170,13 +178,68 @@ const Home: React.FC = () => {
         </header>
 
         <main className={`mx-auto ${isMobile ? 'p-2' : 'max-w-7xl px-6 py-6'} space-y-6`}>
-          {alertMessage && (
-            <div className={`rounded-lg p-4 ${
-              alertMessage.includes('erfolgreich') 
-                ? 'bg-green-50 text-green-700 ring-1 ring-green-600/20' 
-                : 'bg-red-50 text-red-700 ring-1 ring-red-600/20'
-            } text-sm animate-fade-in`}>
-              {alertMessage}
+          {exportMessage && (
+            <div 
+              role="alert"
+              className={`rounded-xl ${isMobile ? 'p-3' : 'p-4'} backdrop-blur-sm animate-fade-in flex items-center gap-4 shadow-lg relative overflow-hidden transition-opacity duration-300 ${
+                exportMessage.includes('erfolgreich') 
+                  ? 'bg-white text-[var(--dvs-gray-dark)] border border-[var(--dvs-orange)]/20' 
+                  : 'bg-red-50 text-red-700 ring-1 ring-red-600/20'
+              }`}>
+              {/* Background gradient effect */}
+              {exportMessage.includes('erfolgreich') && (
+                <div className="absolute inset-0 bg-gradient-to-r from-[var(--dvs-orange)]/10 via-[var(--dvs-orange)]/5 to-transparent animate-gradient" />
+              )}
+              
+              {/* Icon container with pulsing effect */}
+              <div className={`relative rounded-full ${isMobile ? 'p-1.5' : 'p-2'} ${
+                exportMessage.includes('erfolgreich')
+                  ? 'bg-[var(--dvs-orange)]/10'
+                  : 'bg-red-100'
+              }`}>
+                {/* Pulse effect for success */}
+                {exportMessage.includes('erfolgreich') && (
+                  <div className="absolute inset-0 rounded-full bg-[var(--dvs-orange)]/20 animate-ping" />
+                )}
+                
+                {exportMessage.includes('erfolgreich') ? (
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" 
+                       className={`${isMobile ? 'w-5 h-5' : 'w-6 h-6'} text-[var(--dvs-orange)] relative`}>
+                    <path fillRule="evenodd" d="M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12zm13.36-1.814a.75.75 0 10-1.22-.872l-3.236 4.53L9.53 12.22a.75.75 0 00-1.06 1.06l2.25 2.25a.75.75 0 001.14-.094l3.75-5.25z" clipRule="evenodd" />
+                  </svg>
+                ) : (
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" 
+                       className={`${isMobile ? 'w-5 h-5' : 'w-6 h-6'} text-red-600 relative`}>
+                    <path fillRule="evenodd" d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25zm-1.72 6.97a.75.75 0 10-1.06 1.06L10.94 12l-1.72 1.72a.75.75 0 101.06 1.06L12 13.06l1.72 1.72a.75.75 0 101.06-1.06L13.06 12l1.72-1.72a.75.75 0 10-1.06-1.06L12 10.94l-1.72-1.72z" clipRule="evenodd" />
+                  </svg>
+                )}
+              </div>
+              
+              {/* Message text with enhanced styling */}
+              <div className="flex-1 relative">
+                <div className={`${isMobile ? 'text-sm' : 'text-base'} font-medium`}>
+                  {exportMessage}
+                </div>
+                {exportMessage.includes('erfolgreich') && (
+                  <div className="text-[var(--dvs-gray)] text-sm mt-0.5">
+                    Die Daten wurden erfolgreich auf den SFTP-Server hochgeladen
+                  </div>
+                )}
+              </div>
+
+              {/* Dismiss button */}
+              <button
+                onClick={() => setExportMessage(null)}
+                className={`p-1.5 rounded-lg transition-colors duration-200 outline-none focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--dvs-orange)]/20 focus-visible:ring-offset-1 ${
+                  exportMessage.includes('erfolgreich')
+                    ? 'text-[var(--dvs-gray)] hover:text-[var(--dvs-gray-dark)] hover:bg-[var(--dvs-orange)]/5'
+                    : 'text-red-400 hover:text-red-500 hover:bg-red-50'
+                }`}
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5">
+                  <path fillRule="evenodd" d="M5.47 5.47a.75.75 0 011.06 0L12 10.94l5.47-5.47a.75.75 0 111.06 1.06L13.06 12l5.47 5.47a.75.75 0 11-1.06 1.06L12 13.06l-5.47 5.47a.75.75 0 01-1.06-1.06L10.94 12 5.47 6.53a.75.75 0 010-1.06z" clipRule="evenodd" />
+                </svg>
+              </button>
             </div>
           )}
           {isMobile ? (
@@ -224,7 +287,7 @@ const Home: React.FC = () => {
                   <div className="bg-white rounded-xl shadow-sm p-2 h-full backdrop-blur-sm bg-white/80">
                     <MobileBarcodeScanner 
                       onScan={handleScan} 
-                      error={alertMessage} 
+                      error={scannerMessage} 
                       checkDuplicate={checkDuplicate}
                       isMobile={isMobile}
                       isActive={activeTab === 'scan'}
@@ -259,7 +322,7 @@ const Home: React.FC = () => {
               <div className="bg-white/80 backdrop-blur-sm rounded-xl shadow-sm p-5 relative overflow-hidden group">
                 <div className="absolute inset-0 bg-gradient-to-r from-[var(--dvs-orange)]/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                 <div className="relative">
-                  <BarcodeScanner onScan={handleScan} error={alertMessage} checkDuplicate={checkDuplicate} />
+                  <BarcodeScanner onScan={handleScan} error={scannerMessage} checkDuplicate={checkDuplicate} />
                 </div>
               </div>
               
