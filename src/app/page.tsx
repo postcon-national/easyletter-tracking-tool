@@ -142,10 +142,8 @@ const Home: React.FC = () => {
     // Force access to latest data state
     const currentData = data;
     if (!isDataLoaded) {
-      console.log('Data not yet loaded');
       return false;
     }
-    console.log('Checking duplicate with data length:', currentData.length);
     return currentData.some(item => item.dmc === scannedData.trim());
   }, [data, isDataLoaded]);
 
@@ -158,7 +156,7 @@ const Home: React.FC = () => {
           {exportMessage && (
             <div 
               role="alert"
-              className={`rounded-xl ${isMobile ? 'p-3' : 'p-4'} backdrop-blur-sm animate-fade-in flex items-center gap-4 shadow-lg relative overflow-hidden transition-opacity duration-300 ${
+              className={`bg-white rounded-xl shadow-sm flex items-start gap-4 p-4 ${
                 exportMessage.includes('erfolgreich') 
                   ? 'bg-white text-[var(--dvs-gray-dark)] border border-[var(--dvs-orange)]/20' 
                   : 'bg-red-50 text-red-700 ring-1 ring-red-600/20'
@@ -186,25 +184,23 @@ const Home: React.FC = () => {
                 )}
               </div>
               
-              {/* Message text with enhanced styling */}
-              <div className="flex-1 relative">
-                <div className={`${isMobile ? 'text-sm' : 'text-base'} font-medium`}>
+              <div className="flex-1 pt-1">
+                <p className="text-sm font-medium">
                   {exportMessage}
-                </div>
+                </p>
                 {exportMessage.includes('erfolgreich') && (
-                  <div className="text-[var(--dvs-gray)] text-sm mt-0.5">
+                  <p className="text-[var(--dvs-gray)] text-xs mt-1">
                     Die Daten wurden erfolgreich auf den SFTP-Server hochgeladen
-                  </div>
+                  </p>
                 )}
               </div>
 
-              {/* Dismiss button */}
               <button
                 onClick={() => setExportMessage(null)}
-                className={`p-1.5 rounded-lg transition-colors duration-200 outline-none focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--dvs-orange)]/20 focus-visible:ring-offset-1 ${
+                className={`shrink-0 p-2 rounded-lg transition-colors duration-200 ${
                   exportMessage.includes('erfolgreich')
                     ? 'text-[var(--dvs-gray)] hover:text-[var(--dvs-gray-dark)] hover:bg-[var(--dvs-orange)]/5'
-                    : 'text-red-400 hover:text-red-500 hover:bg-red-50'
+                    : 'text-red-400 hover:text-red-600 hover:bg-red-100'
                 }`}
               >
                 <IconDismiss />
@@ -214,14 +210,13 @@ const Home: React.FC = () => {
          
           {isMobile ? (
             <div className="flex flex-col h-[calc(100vh-96px)]">
-              <nav className="flex bg-white rounded-xl shadow-sm mb-2 p-1">
+              <nav className="flex bg-white/80 backdrop-blur-sm rounded-xl shadow-sm p-1.5 mb-3">
                 <button
                   onClick={() => setActiveTab('scan')}
-                  className={`flex-1 flex items-center justify-center gap-2 py-3 text-sm font-medium transition-all duration-300 rounded-lg
-                    outline-none focus:outline-none focus-visible:outline-none ring-offset-white focus-visible:ring-2 focus-visible:ring-[var(--dvs-orange)]/20 focus-visible:ring-offset-1 [--tw-ring-color:transparent]
+                  className={`flex-1 flex items-center justify-center gap-2 py-2.5 text-sm font-medium transition-all duration-300 rounded-lg
                     ${activeTab === 'scan'
-                      ? 'text-[var(--dvs-orange)] bg-gradient-to-br from-[var(--dvs-orange)]/10 via-[var(--dvs-orange)]/5 to-transparent shadow-[inset_0_1px_0_0_rgba(255,255,255,0.1)] border border-[var(--dvs-orange)]/10'
-                      : 'text-[var(--dvs-gray)] hover:text-[var(--dvs-gray-dark)] hover:bg-gradient-to-br hover:from-gray-50 hover:to-transparent border border-transparent hover:border-gray-100'
+                      ? 'text-[var(--dvs-orange)] bg-gradient-to-r from-[var(--dvs-orange)]/10 to-[var(--dvs-orange)]/5 shadow-sm border border-[var(--dvs-orange)]/10'
+                      : 'text-[var(--dvs-gray)] hover:text-[var(--dvs-gray-dark)] hover:bg-gray-50/80'
                     }`}
                 >
                   <IconScan activeTab={activeTab} />
@@ -229,17 +224,16 @@ const Home: React.FC = () => {
                 </button>
                 <button
                   onClick={() => setActiveTab('table')}
-                  className={`flex-1 flex items-center justify-center gap-2 py-3 text-sm font-medium transition-all duration-300 rounded-lg
-                    outline-none focus:outline-none focus-visible:outline-none ring-offset-white focus-visible:ring-2 focus-visible:ring-[var(--dvs-orange)]/20 focus-visible:ring-offset-1 [--tw-ring-color:transparent]
+                  className={`flex-1 flex items-center justify-center gap-2 py-2.5 text-sm font-medium transition-all duration-300 rounded-lg
                     ${activeTab === 'table'
-                      ? 'text-[var(--dvs-orange)] bg-gradient-to-br from-[var(--dvs-orange)]/10 via-[var(--dvs-orange)]/5 to-transparent shadow-[inset_0_1px_0_0_rgba(255,255,255,0.1)] border border-[var(--dvs-orange)]/10'
-                      : 'text-[var(--dvs-gray)] hover:text-[var(--dvs-gray-dark)] hover:bg-gradient-to-br hover:from-gray-50 hover:to-transparent border border-transparent hover:border-gray-100'
+                      ? 'text-[var(--dvs-orange)] bg-gradient-to-r from-[var(--dvs-orange)]/10 to-[var(--dvs-orange)]/5 shadow-sm border border-[var(--dvs-orange)]/10'
+                      : 'text-[var(--dvs-gray)] hover:text-[var(--dvs-gray-dark)] hover:bg-gray-50/80'
                     }`}
                 >
                   <IconList activeTab={activeTab} />
                   <span className="relative">Übersicht</span>
                   {data.length > 0 && (
-                    <span className="relative ml-1 px-2 py-0.5 rounded-full bg-gradient-to-r from-[var(--dvs-orange)]/10 to-[var(--dvs-orange)]/5 text-[var(--dvs-orange)] text-xs font-medium ring-1 ring-inset ring-[var(--dvs-orange)]/10 [--tw-ring-color:transparent]">
+                    <span className="pointer-events-none select-none px-2 py-0.5 rounded-full bg-gradient-to-r from-[var(--dvs-orange)]/10 to-[var(--dvs-orange)]/5 text-[var(--dvs-orange)] text-xs font-medium ring-1 ring-inset ring-[var(--dvs-orange)]/10 [outline:none] focus:outline-none focus:ring-0">
                       {data.length}
                     </span>
                   )}
@@ -248,7 +242,8 @@ const Home: React.FC = () => {
 
               <div className="flex-1 overflow-hidden">
                 {activeTab === 'scan' ? (
-                  <div className="bg-white rounded-xl shadow-sm p-2 h-full backdrop-blur-sm bg-white/80">
+                  <div className="bg-white rounded-xl shadow-sm p-3 sm:p-4 h-full backdrop-blur-sm bg-white/80">
+                    <h2 className="text-lg font-medium text-[var(--dvs-gray-dark)] mb-3">Barcode Scanner</h2>
                     <MobileBarcodeScanner 
                       onScan={handleScan} 
                       error={scannerMessage} 
@@ -258,7 +253,15 @@ const Home: React.FC = () => {
                     />
                   </div>
                 ) : (
-                  <div className="bg-white/80 backdrop-blur-sm rounded-xl shadow-sm p-2 h-full overflow-auto">
+                  <div className="bg-white/80 backdrop-blur-sm rounded-xl shadow-sm p-3 sm:p-4 h-full overflow-auto">
+                    <h2 className="text-lg font-medium text-[var(--dvs-gray-dark)] mb-3 flex items-center gap-2">
+                      Gescannte Codes
+                      {data.length > 0 && (
+                        <span className="pointer-events-none select-none px-2 py-0.5 rounded-full bg-gradient-to-r from-[var(--dvs-orange)]/10 to-[var(--dvs-orange)]/5 text-[var(--dvs-orange)] text-xs font-medium ring-1 ring-inset ring-[var(--dvs-orange)]/10 [outline:none] focus:outline-none focus:ring-0">
+                          {data.length}
+                        </span>
+                      )}
+                    </h2>
                     <DataTable
                       columns={columns}
                       data={data}
@@ -268,7 +271,7 @@ const Home: React.FC = () => {
                       itemsPerPage={itemsPerPage}
                       onItemsPerPageChange={handleItemsPerPageChange}
                     />
-                    <div className="flex justify-end mt-3 space-x-2">
+                    <div className="flex justify-end mt-4 space-x-2.5">
                       <DeleteButton onDelete={handleDelete} disabled={selectedRows.length === 0} isMobile={true} /> 
                       <ExportButton 
                         onExport={handleExport} 
@@ -283,14 +286,18 @@ const Home: React.FC = () => {
             </div>
           ) : (
             <>
-              <div className="bg-white/80 backdrop-blur-sm rounded-xl shadow-sm p-5 relative overflow-hidden group">
+              <div className="bg-white/80 backdrop-blur-sm rounded-xl shadow-sm p-3 sm:p-4 relative overflow-hidden group">
+                <h2 className="text-xl font-medium text-[var(--dvs-gray-dark)] mb-4">Barcode Scanner</h2>
                 <div className="absolute inset-0 bg-gradient-to-r from-[var(--dvs-orange)]/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                 <div className="relative">
                   <BarcodeScanner onScan={handleScan} error={scannerMessage} checkDuplicate={checkDuplicate} />
                 </div>
               </div>
               
-              <div className="bg-white/80 backdrop-blur-sm rounded-xl shadow-sm p-5">
+              <div className="bg-white/80 backdrop-blur-sm rounded-xl shadow-sm p-3 sm:p-4">
+                <h2 className="text-xl font-medium text-[var(--dvs-gray-dark)] mb-4">
+                  Gescannte Codes
+                </h2>
                 <DataTable
                   columns={columns}
                   data={data}
@@ -301,7 +308,7 @@ const Home: React.FC = () => {
                   onItemsPerPageChange={handleItemsPerPageChange}
                 />
                 
-                <div className="flex justify-end mt-5 space-x-3">
+                <div className="flex justify-end mt-4 space-x-2.5">
                   <DeleteButton onDelete={handleDelete} disabled={selectedRows.length === 0} isMobile={false} /> 
                   <ExportButton 
                     onExport={handleExport} 

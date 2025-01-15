@@ -40,6 +40,9 @@ ENV SFTP_PORT=${SFTP_PORT}
 ENV SFTP_USERNAME=${SFTP_USERNAME}
 ENV SFTP_PASSWORD=${SFTP_PASSWORD}
 
+# Install openssh-client for SFTP connectivity
+RUN apk add --no-cache openssh-client
+
 RUN addgroup --system --gid 1001 nodejs
 RUN adduser --system --uid 1001 nextjs
 

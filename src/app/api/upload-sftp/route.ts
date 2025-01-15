@@ -6,6 +6,7 @@ const SFTP_CONFIG = {
   port: parseInt(process.env.SFTP_PORT || "22"),
   username: process.env.SFTP_USERNAME,
   password: process.env.SFTP_PASSWORD,
+  readyTimeout: 10000, // 10 seconds timeout
 };
 
 export async function POST(request: Request) {
@@ -17,12 +18,17 @@ export async function POST(request: Request) {
       const conn = new Client();
 
       // Add connection event handlers
+      conn.on("error", (err) => {
+        console.error("SFTP: Connection error:", err);
+        reject(err);
+      });
+
       conn.on("ready", () => {
-        console.log("SFTP: Connection established");
         conn.sftp((err: Error | undefined, sftp) => {
           if (err) {
             console.error("SFTP: Failed to create SFTP session:", err);
             reject(err);
+            conn.end();
             return;
           }
 
@@ -38,7 +44,6 @@ export async function POST(request: Request) {
             const writeStream = sftp.createWriteStream(`/in/${filename}`);
 
             writeStream.on("close", () => {
-              console.log("SFTP: File uploaded successfully");
               conn.end();
               resolve();
             });
@@ -49,6 +54,7 @@ export async function POST(request: Request) {
               reject(err);
             });
 
+            // Write the content and end the stream
             writeStream.write(content, (err) => {
               if (err) {
                 console.error("SFTP: Write error:", err);
@@ -61,35 +67,20 @@ export async function POST(request: Request) {
         });
       });
 
-      conn.on("error", (err: Error) => {
-        console.error("SFTP: Connection error:", err);
+      // Connect
+      try {
+        conn.connect(SFTP_CONFIG);
+      } catch (err) {
+        console.error("SFTP: Connection attempt error:", err);
         reject(err);
-      });
-
-      conn.on("end", () => {
-        console.log("SFTP: Connection ended");
-      });
-
-      console.log("SFTP: Attempting connection with config:", {
-        host: SFTP_CONFIG.host,
-        port: SFTP_CONFIG.port,
-        username: SFTP_CONFIG.username,
-        // Mask password for security
-        password: SFTP_CONFIG.password ? "********" : undefined,
-      });
-
-      conn.connect(SFTP_CONFIG);
+      }
     });
 
-    return NextResponse.json({ success: true, filename });
+    return NextResponse.json({ success: true });
   } catch (error) {
     console.error("SFTP upload error:", error);
-    // Return more detailed error message
     return NextResponse.json(
-      {
-        error: "Failed to upload file via SFTP",
-        details: error instanceof Error ? error.message : String(error),
-      },
+      { error: error instanceof Error ? error.message : "Unknown error" },
       { status: 500 }
     );
   }
