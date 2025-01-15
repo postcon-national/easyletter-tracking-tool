@@ -2,8 +2,8 @@
 
 import React, { useState } from 'react';
 import { Code, Column } from '@/types/types';
-import StatusTag from './StatusTag';
-import EmptyState from './EmptyState';
+import StatusTag from '@/components/StatusTag';
+import EmptyState from '@/components/EmptyState';
 
 interface DataTableProps {
   columns: Array<Column<Code>>;

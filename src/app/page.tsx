@@ -16,7 +16,6 @@ import IconExportError from '@/components/svg/IconExportError';
 import IconDismiss from '@/components/svg/IconDismiss';
 import IconScan from '@/components/svg/IconScan';
 import IconList from '@/components/svg/IconList';
-import Header from '@/components/Header';
 import DownloadDialog from '@/components/DownloadDialog';
 import { ITEMS_PER_PAGE_KEY, LOCAL_STORAGE_KEY } from '@/constants/constants'; 
 
@@ -155,17 +154,7 @@ const Home: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-[var(--dvs-gray-light)] relative">
-      <div className="absolute inset-0 bg-[conic-gradient(at_top_left,_var(--tw-gradient-stops))] from-white via-[var(--dvs-gray-light)] to-[var(--dvs-gray-light)] opacity-40" />
-      <div className="absolute inset-0" style={{ 
-        backgroundImage: `radial-gradient(var(--dvs-orange) 0.5px, transparent 0.5px), radial-gradient(var(--dvs-orange) 0.5px, var(--dvs-gray-light) 0.5px)`,
-        backgroundSize: '20px 20px',
-        backgroundPosition: '0 0, 10px 10px',
-        opacity: 0.05
-      }} />
-      <div className="relative">
-        <Header isMobile={isMobile} />
-        <main className={`mx-auto ${isMobile ? 'p-2' : 'max-w-7xl px-6 py-6'} space-y-6`}>
+    <> 
           {exportMessage && (
             <div 
               role="alert"
@@ -324,14 +313,11 @@ const Home: React.FC = () => {
               </div>
             </>
           )}
-        </main>
-      </div>
-
       {/* Custom Download Dialog */}
       {showDownloadDialog && (
         <DownloadDialog onCancel={handleDownloadCancel} onConfirm={handleDownloadConfirm} />
       )}
-    </div>
+    </>
   );
 };
 

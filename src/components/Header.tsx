@@ -1,13 +1,20 @@
-// src/components/Header.tsx
-import React from 'react';
+"use client"
+
+import React, { useEffect, useState } from 'react';
 import Image from 'next/image'; // Adjust the import based on your setup
 import UserIcon from '@/components/svg/UserIcon';
+import useWindowSize from '@/hooks/useWindowSize';
 
-interface HeaderProps {
-    isMobile: boolean;
-}
+const Header: React.FC = () => {
+    const { width } = useWindowSize();
 
-const Header: React.FC<HeaderProps> = ({ isMobile }) => {
+    const [isMobile, setIsMobile] = useState(false);
+
+
+    useEffect(() => {
+        setIsMobile(width <= 768);
+      }, [width]);
+
     return (
         <header className="bg-white/80 backdrop-blur-sm shadow-sm sticky top-0 z-10 border-b border-gray-200/50">
             <div className={`mx-auto ${isMobile ? 'px-4 py-2' : 'max-w-7xl px-6 py-4'}`}>

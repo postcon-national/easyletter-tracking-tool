@@ -1,4 +1,3 @@
-// src/app/svg/IconScan.tsx
 import React from 'react';
 
 interface IconScanProps extends React.SVGProps<SVGSVGElement> {

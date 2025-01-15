@@ -1,4 +1,3 @@
-// src/app/svg/IconList.tsx
 import React from 'react';
 
 interface IconListProps extends React.SVGProps<SVGSVGElement> {

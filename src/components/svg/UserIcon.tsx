@@ -1,4 +1,3 @@
-// src/app/svg/UserIcon.tsx
 import React from 'react';
 
 interface UserIconProps extends React.SVGProps<SVGSVGElement> {

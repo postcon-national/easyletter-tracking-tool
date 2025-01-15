@@ -1,7 +1,7 @@
 "use client"
 
 import React, { useState, useRef, useEffect } from 'react';
-import MobileBarcodeScanner from './MobileBarcodeScanner';
+import MobileBarcodeScanner from '@/components/MobileBarcodeScanner';
 
 interface BarcodeScannerProps {
   onScan: (data: string) => void;
