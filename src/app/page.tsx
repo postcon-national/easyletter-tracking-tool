@@ -9,7 +9,7 @@ import ExportButton from '@/components/ExportButton';
 import { columns } from '@/data/data';
 import useWindowSize from '@/hooks/useWindowSize';
 import { exportToCSV, downloadCSV } from '@/utils/cvs/functions';
-import { scan } from '@/utils/scan/functions';
+import { handleScanAction, scan } from '@/utils/scan/functions';
 import { Code } from '@/types/types';
 import IconExportSuccess from '@/components/svg/IconExportSuccess';
 import IconExportError from '@/components/svg/IconExportError';
@@ -17,7 +17,8 @@ import IconDismiss from '@/components/svg/IconDismiss';
 import IconScan from '@/components/svg/IconScan';
 import IconList from '@/components/svg/IconList';
 import DownloadDialog from '@/components/DownloadDialog';
-import { ITEMS_PER_PAGE_KEY, LOCAL_STORAGE_KEY } from '@/constants/constants'; 
+import { ITEMS_PER_PAGE_KEY, LOCAL_STORAGE_KEY, SCAN_DUPLICATE_MESSAGE } from '@/constants/constants'; 
+import { checkDuplicateCodes } from '@/utils/code/functions';
 
 const Home: React.FC = () => {
   const { width } = useWindowSize();
@@ -127,24 +128,11 @@ const Home: React.FC = () => {
   };
 
   const handleScan = useCallback((scannedData: string) => {
-    const trimmedData = scannedData.trim();
-    const exists = data.some(item => item.dmc === trimmedData);
-
-    if (!exists) {
-      scan(trimmedData, data, setData);
-      setScannerMessage(null);
-    } else {
-      setScannerMessage('Dieser Barcode wurde bereits gescannt.');
-    }
+    handleScanAction(scannedData, data, setData, setScannerMessage);  
   }, [data]);
 
   const checkDuplicate = useCallback((scannedData: string) => {
-    // Force access to latest data state
-    const currentData = data;
-    if (!isDataLoaded) {
-      return false;
-    }
-    return currentData.some(item => item.dmc === scannedData.trim());
+    return checkDuplicateCodes(isDataLoaded, data, scannedData);
   }, [data, isDataLoaded]);
 
   if (isLoading) {

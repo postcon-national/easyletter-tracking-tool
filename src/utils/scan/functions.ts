@@ -1,3 +1,4 @@
+import { SCAN_DUPLICATE_MESSAGE } from "@/constants/constants";
 import { Code } from "@/types/types";
 
 const formatDateTime = (date: Date): string => {
@@ -23,3 +24,15 @@ export const scan = (
   };
   setData((prevData) => [...prevData, newEntry]);
 };
+
+export const handleScanAction = (scannedData: string, data: Code[], setData: (value: React.SetStateAction<Code[]>) => void, setScannerMessage: (value: string | null) => void) => {
+  const trimmedData = scannedData.trim();
+  const exists = data.some(item => item.dmc === trimmedData);
+
+  if (!exists) {
+    scan(trimmedData, data, setData);
+    setScannerMessage(null);
+  } else {
+    setScannerMessage(SCAN_DUPLICATE_MESSAGE);
+  }
+}

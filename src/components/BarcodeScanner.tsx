@@ -2,6 +2,7 @@
 
 import React, { useState, useRef, useEffect } from 'react';
 import MobileBarcodeScanner from '@/components/MobileBarcodeScanner';
+import { SCAN_DUPLICATE_MESSAGE } from '@/constants/constants';
 
 interface BarcodeScannerProps {
   onScan: (data: string) => void;
@@ -77,9 +78,9 @@ export default function BarcodeScanner({ onScan, error, checkDuplicate }: Barcod
     if (e.key === 'Enter' && inputValue) {
       if (validateBarcode(inputValue)) {
         if (checkDuplicate(inputValue)) {
-          setValidationError('Dieser Barcode wurde bereits gescannt.');
+          setValidationError(SCAN_DUPLICATE_MESSAGE);
         } else {
-          onScan(inputValue);
+          onScan(inputValue + '\r\n');
           setInputValue('');
           setValidationError('');
         }
@@ -95,7 +96,7 @@ export default function BarcodeScanner({ onScan, error, checkDuplicate }: Barcod
   const handleCameraScan = (data: string) => {
     if (validateBarcode(data)) {
       if (checkDuplicate(data)) {
-        setValidationError('Dieser Barcode wurde bereits gescannt.');
+        setValidationError(SCAN_DUPLICATE_MESSAGE);
       } else {
         onScan(data);
         setValidationError('');

@@ -2,6 +2,7 @@
 
 import React, { useRef, useEffect, useState, useCallback } from "react";
 import jsQR from "jsqr";
+import { SCAN_DUPLICATE_MESSAGE } from "@/constants/constants";
 
 interface MobileBarcodeScannerProps {
   onScan: (data: string) => void;
@@ -120,7 +121,7 @@ const MobileBarcodeScanner: React.FC<MobileBarcodeScannerProps> = ({
           setIsScanning(false);
           
           if (checkDuplicate(code.data)) {
-            setValidationError('Dieser Barcode wurde bereits gescannt.');
+            setValidationError(SCAN_DUPLICATE_MESSAGE);
             lastScanTimeRef.current = now;
             setTimeout(() => {
               setValidationError('');
