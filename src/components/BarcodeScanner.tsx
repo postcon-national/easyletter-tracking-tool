@@ -13,16 +13,36 @@ export default function BarcodeScanner({ onScan, error, checkDuplicate }: Barcod
   const [inputValue, setInputValue] = useState('');
   const [showCamera, setShowCamera] = useState(false);
   const [validationError, setValidationError] = useState('');
+  const [isScanningMode, setIsScanningMode] = useState(true);
   const inputRef = useRef<HTMLInputElement>(null);
 
+  // Auto-focus effect when scanning mode is active
   useEffect(() => {
-    if (!showCamera && inputRef.current) {
-      inputRef.current.focus();
+    let focusInterval: NodeJS.Timeout | null = null;
+    
+    if (isScanningMode && !showCamera) {
+      focusInterval = setInterval(() => {
+        if (document.activeElement !== inputRef.current) {
+          inputRef.current?.focus();
+        }
+      }, 100);
     }
-  }, [showCamera]);
+
+    return () => {
+      if (focusInterval) {
+        clearInterval(focusInterval);
+      }
+    };
+  }, [isScanningMode, showCamera]);
 
   const validateBarcode = (code: string): boolean => {
     code = code.trim();
+
+    // Check for multiple barcodes
+    if (code.includes('\n') || code.includes('DVS', 1)) {
+      setValidationError('Bitte nur einen Barcode auf einmal scannen');
+      return false;
+    }
 
     if (code.length < 31) {
       setValidationError('Barcode muss mindestens 31 Zeichen lang sein');
@@ -74,17 +94,37 @@ export default function BarcodeScanner({ onScan, error, checkDuplicate }: Barcod
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter' && inputValue) {
-      if (validateBarcode(inputValue)) {
-        if (checkDuplicate(inputValue)) {
-          setValidationError('Dieser Barcode wurde bereits gescannt.');
+    if (e.key === 'Enter') {
+      const code = inputValue.trim();
+      
+      // Check for multiple barcodes before validation
+      if (code.includes('\n') || code.includes('DVS', 1)) {
+        setValidationError('Bitte nur einen Barcode auf einmal scannen');
+      } else if (validateBarcode(code)) {
+        if (checkDuplicate(code)) {
+          setValidationError(`Barcode wurde bereits gescannt: ${code}`);
         } else {
-          onScan(inputValue);
-          setInputValue('');
+          onScan(code);
           setValidationError('');
         }
       }
+      // Clear input after each scan attempt, whether successful or not
+      setInputValue('');
+      if (inputRef.current) {
+        inputRef.current.focus();
+      }
     }
+  };
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newValue = e.target.value;
+    // Prevent pasting of multiple barcodes
+    if (newValue.includes('\n') || newValue.includes('DVS', 1)) {
+      setValidationError('Bitte nur einen Barcode auf einmal scannen');
+    } else {
+      setValidationError('');
+    }
+    setInputValue(newValue);
   };
 
   const handleCameraToggle = () => {
@@ -95,7 +135,7 @@ export default function BarcodeScanner({ onScan, error, checkDuplicate }: Barcod
   const handleCameraScan = (data: string) => {
     if (validateBarcode(data)) {
       if (checkDuplicate(data)) {
-        setValidationError('Dieser Barcode wurde bereits gescannt.');
+        setValidationError(`Barcode wurde bereits gescannt: ${data}`);
       } else {
         onScan(data);
         setValidationError('');
@@ -126,22 +166,44 @@ export default function BarcodeScanner({ onScan, error, checkDuplicate }: Barcod
       ) : (
         <div className="space-y-2">
           <div className="flex gap-2">
-            <input
-              ref={inputRef}
-              type="text"
-              value={inputValue}
-              onChange={(e) => {
-                setInputValue(e.target.value);
-                setValidationError('');
-              }}
-              onKeyDown={handleKeyDown}
-              placeholder="Bitte Barcode scannen oder eingeben"
-              className={`flex-1 p-2 border rounded focus:outline-none focus:ring-0 focus:border-[var(--dvs-orange)] transition-colors ${
-                validationError || error
-                  ? 'border-[var(--dvs-orange)]'
-                  : 'border-gray-200'
-              }`}
-            />
+            <div className="relative flex-1 flex items-center">
+              <input
+                ref={inputRef}
+                type="text"
+                value={inputValue}
+                onChange={handleInputChange}
+                onKeyDown={handleKeyDown}
+                placeholder={isScanningMode ? "Barcode scannen..." : "Barcode scannen (Scan-Modus deaktiviert)"}
+                className={`w-full p-2 border rounded focus:outline-none focus:ring-0 focus:border-[var(--dvs-orange)] transition-colors ${
+                  validationError || error
+                    ? 'border-[var(--dvs-orange)]'
+                    : 'border-gray-200'
+                } ${!isScanningMode && 'bg-gray-50 text-gray-500'}`}
+              />
+              <button
+                onClick={() => setIsScanningMode(!isScanningMode)}
+                className={`absolute right-2 p-1.5 rounded-md transition-colors ${
+                  isScanningMode 
+                    ? 'text-[var(--dvs-orange)] hover:bg-[var(--dvs-orange)]/10' 
+                    : 'text-gray-400 hover:bg-gray-100'
+                }`}
+                title={isScanningMode ? "Scan-Modus deaktivieren" : "Scan-Modus aktivieren"}
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5">
+                  <path d="M4 7V4h3" />
+                  <path d="M20 7V4h-3" />
+                  <path d="M4 17v3h3" />
+                  <path d="M20 17v3h-3" />
+                  <line x1="7" y1="7" x2="7" y2="17" />
+                  <line x1="10" y1="7" x2="10" y2="17" />
+                  <line x1="13" y1="7" x2="13" y2="17" />
+                  <line x1="16" y1="7" x2="16" y2="17" />
+                  {isScanningMode && (
+                    <line x1="4" y1="12" x2="19" y2="12" className="text-[var(--dvs-orange)]" strokeWidth="1.5" />
+                  )}
+                </svg>
+              </button>
+            </div>
             <button
               onClick={handleCameraToggle}
               className="p-2 border rounded hover:bg-gray-50"
@@ -159,6 +221,14 @@ export default function BarcodeScanner({ onScan, error, checkDuplicate }: Barcod
                 <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
               </svg>
               <span className="text-sm text-[#4a4a4a] font-medium">{validationError || error}</span>
+            </div>
+          )}
+          {!isScanningMode && (
+            <div className="flex items-center gap-2 p-3 bg-gray-50 border border-gray-200 rounded text-sm text-gray-600">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-5 h-5">
+                <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a.75.75 0 000 1.5h.253a.25.25 0 01.244.304l-.459 2.066A1.75 1.75 0 0010.747 15H11a.75.75 0 000-1.5h-.253a.25.25 0 01-.244-.304l.459-2.066A1.75 1.75 0 009.253 9H9z" clipRule="evenodd" />
+              </svg>
+              Scan-Modus ist deaktiviert. Sie können jetzt die Tabelle durchsuchen und Einträge auswählen.
             </div>
           )}
         </div>
