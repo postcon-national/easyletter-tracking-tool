@@ -38,6 +38,12 @@ export default function BarcodeScanner({ onScan, error, checkDuplicate }: Barcod
   const validateBarcode = (code: string): boolean => {
     code = code.trim();
 
+    // Check for multiple barcodes
+    if (code.includes('\n') || code.includes('DVS', 1)) {
+      setValidationError('Bitte nur einen Barcode auf einmal scannen');
+      return false;
+    }
+
     if (code.length < 31) {
       setValidationError('Barcode muss mindestens 31 Zeichen lang sein');
       return false;
@@ -90,9 +96,13 @@ export default function BarcodeScanner({ onScan, error, checkDuplicate }: Barcod
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter') {
       const code = inputValue.trim();
-      if (validateBarcode(code)) {
+      
+      // Check for multiple barcodes before validation
+      if (code.includes('\n') || code.includes('DVS', 1)) {
+        setValidationError('Bitte nur einen Barcode auf einmal scannen');
+      } else if (validateBarcode(code)) {
         if (checkDuplicate(code)) {
-          setValidationError('Dieser Barcode wurde bereits gescannt.');
+          setValidationError(`Barcode wurde bereits gescannt: ${code}`);
         } else {
           onScan(code);
           setValidationError('');
@@ -107,8 +117,14 @@ export default function BarcodeScanner({ onScan, error, checkDuplicate }: Barcod
   };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setInputValue(e.target.value);
-    setValidationError('');
+    const newValue = e.target.value;
+    // Prevent pasting of multiple barcodes
+    if (newValue.includes('\n') || newValue.includes('DVS', 1)) {
+      setValidationError('Bitte nur einen Barcode auf einmal scannen');
+    } else {
+      setValidationError('');
+    }
+    setInputValue(newValue);
   };
 
   const handleCameraToggle = () => {
@@ -119,7 +135,7 @@ export default function BarcodeScanner({ onScan, error, checkDuplicate }: Barcod
   const handleCameraScan = (data: string) => {
     if (validateBarcode(data)) {
       if (checkDuplicate(data)) {
-        setValidationError('Dieser Barcode wurde bereits gescannt.');
+        setValidationError(`Barcode wurde bereits gescannt: ${data}`);
       } else {
         onScan(data);
         setValidationError('');
