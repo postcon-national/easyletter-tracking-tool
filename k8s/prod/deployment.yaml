@@ -1,0 +1,47 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: easyletter-tracking-tool
+  labels:
+    app: easyletter-tracking-tool
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: easyletter-tracking-tool
+  template:
+    metadata:
+      labels:
+        app: easyletter-tracking-tool
+    spec:
+      imagePullSecrets:
+        - name: docker-registry
+      containers:
+        - name: easyletter-tracking-tool
+          image: docker-test.postcon.net/easyletter-tracking-tool:latest
+          imagePullPolicy: Always
+          envFrom:
+            - secretRef:
+                name: easyletter-tracking-tool-sftp-credentials
+          ports:
+            - name: web
+              containerPort: 3000
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "128Mi"
+            limits:
+              cpu: "500m"
+              memory: "512Mi"
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 3000
+            initialDelaySeconds: 10
+            periodSeconds: 5
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 3000
+            initialDelaySeconds: 15
+            periodSeconds: 10
