@@ -55,7 +55,7 @@ const Header: React.FC = () => {
                             {!isMobile && process.env.NEXT_PUBLIC_NODE_ENV === 'development' &&  
                             <div>
                                 <span className={`inline-flex min-w-fit items-center rounded-full bg-gray-600 text-white ${isMobile ? 'px-1 py-0.5 text-[10px]' : 'px-1.5 py-0.5 text-xs'} font-medium text-green-700 ring-1 ring-inset ring-green-600/20`}>
-                                        Test {process.env.NEXT_PUBLIC_NODE_ENV}
+                                        Test
                                 </span>
                             </div>}
                             
