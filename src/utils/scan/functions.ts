@@ -1,3 +1,4 @@
+import { station } from "@/constants/constants";
 import { Code } from "@/types/types";
 
 const formatDateTime = (date: Date): string => {
@@ -18,7 +19,7 @@ export const scan = (
     dmc: scannedData,
     gam: formatDateTime(new Date()),
     status: "VALID",
-    erfasser: "4202",
+    erfasser: station,
     zust: zustellpartnerId + abladestellenId,
   };
   setData((prevData) => [...prevData, newEntry]);

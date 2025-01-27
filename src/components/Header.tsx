@@ -4,6 +4,7 @@ import React, { useEffect, useState } from 'react';
 import Image from 'next/image'; // Adjust the import based on your setup
 import UserIcon from '@/components/svg/UserIcon';
 import useWindowSize from '@/hooks/useWindowSize';
+import { station } from '@/constants/constants';
 
 const Header: React.FC = () => {
     const { width } = useWindowSize();
@@ -45,12 +46,19 @@ const Header: React.FC = () => {
                         <div className="flex flex-col">
                             <div className="flex items-center gap-1.5">
                                 {!isMobile && <span className="text-sm font-medium text-[var(--dvs-gray)]">Station</span>}
-                                <span className="font-semibold text-[var(--dvs-orange)]">4202</span>
+                                <span className="font-semibold text-[var(--dvs-orange)]">{station}</span>
                                 <span className={`inline-flex items-center rounded-full bg-gradient-to-r from-green-50 to-green-50/50 ${isMobile ? 'px-1 py-0.5 text-[10px]' : 'px-1.5 py-0.5 text-xs'} font-medium text-green-700 ring-1 ring-inset ring-green-600/20`}>
                                     Aktiv
                                 </span>
                             </div>
                             {!isMobile && <span className="text-xs text-[var(--dvs-gray)]">Deutscher Versand Service</span>}
+                            {!isMobile && process.env.NEXT_PUBLIC_NODE_ENV === 'development' &&  
+                            <div>
+                                <span className={`inline-flex min-w-fit items-center rounded-full bg-gray-600 text-white ${isMobile ? 'px-1 py-0.5 text-[10px]' : 'px-1.5 py-0.5 text-xs'} font-medium text-green-700 ring-1 ring-inset ring-green-600/20`}>
+                                        Test {process.env.NEXT_PUBLIC_NODE_ENV}
+                                </span>
+                            </div>}
+                            
                         </div>
                     </div>
                 </div>
