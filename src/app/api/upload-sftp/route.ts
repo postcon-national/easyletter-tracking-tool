@@ -1,3 +1,4 @@
+import { sftpPaths } from "@/constants/constants";
 import { NextResponse } from "next/server";
 import { Client } from "ssh2";
 
@@ -41,7 +42,9 @@ export async function POST(request: Request) {
               return;
             }
 
-            const writeStream = sftp.createWriteStream(`/in/${filename}`);
+            
+            const sftpPath = sftpPaths[process.env.NODE_ENV];
+            const writeStream = sftp.createWriteStream(`${sftpPath}/${filename}`);
 
             writeStream.on("close", () => {
               conn.end();
