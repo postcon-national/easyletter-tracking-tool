@@ -43,10 +43,7 @@ export async function POST(request: Request) {
             }
 
             
-            console.log(process.env.NEXT_PUBLIC_NODE_ENV, "NEXT_PUBLIC_NODE_ENV")
-            console.log(process.env.NODE_ENV, "NODE_ENV")
             const sftpPath = sftpPaths[process.env.NODE_ENV];
-            console.log(sftpPath, "sftpPath")
             const writeStream = sftp.createWriteStream(`${sftpPath}/${filename}`);
 
             writeStream.on("close", () => {
